@@ -14,9 +14,9 @@ import wtforms
 class UserAdmin(ModelView, model=User):
     column_list = [User.id, User.login, User.password, User.surname, User.name, User.secname,
                    User.post, User.organization, User.role, User.email, User.contact_tel]
-    column_details_exclude_list = [User.created_messages, User.assigned_messages, User.created_tickets,
+    column_details_exclude_list = [User.created_messages, User.created_tickets,
                                    User.assigned_tickets, User.organization_id, User.role_id]
-    form_excluded_columns = ['created_messages', 'assigned_messages', 'created_tickets', 'assigned_tickets']
+    form_excluded_columns = ['created_messages', 'created_tickets', 'assigned_tickets']
     form_overrides = dict(password=wtforms.PasswordField)                               
     name = "Пользователь"
     name_plural = "Пользователи"
@@ -62,7 +62,7 @@ class TicketAdmin(ModelView, model=Ticket):
     icon = "fa-solid fa-ticket"
 
 class MessagesAdmin(ModelView, model=Messages):
-    column_list = '__all__'
+    column_list = [Messages.creator, Messages.ticket_id, Messages.content, Messages.created_at]
     name = "Сообщение"
     name_plural = "Сообщения"
     icon = "fa-solid fa-commenting"

@@ -1,24 +1,50 @@
 from pydantic import BaseModel
 from typing import Optional, List
-from datetime import datetime
+from datetime import date
 from app.attachments.schemas import AttachmentSchema
-from app.messages.schemas import MessageSchema
+from app.messages.schemas import SMessage
 
-class TicketSchema(BaseModel):
+class SDetailTicket(BaseModel):
     id: int 
     title: str
     description: str
     status_id: int
-    priority: Optional[int] =   1
+    priority: Optional[int] =   None
     creator_id: int
     assigned_id: Optional[int] = None
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
-    messages: Optional[List['MessageSchema']] = []
-    attachments: Optional[List['AttachmentSchema']] = []
+    created_at:date 
+    updated_at: Optional[date] = None
+    organization_id: int
+    messages: Optional[List['SMessage']] = []
+    #attachments: Optional[List['AttachmentSchema']] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+class STicketSummury(BaseModel):
+    id: int 
+    title: str
+    status_id: int
+    priority: Optional[int] = None
+    creator_id: int
+    assigned_id: Optional[int] = None
+    created_at: Optional[date] = None
+    updated_at: Optional[date] = None
+    organization_id: int
 
+    class Config:
+        from_attributes=True
+
+class SCreateTicket(BaseModel):
+    title: str
+    description: str
+    status_id: int
+    priority: Optional[int] = None
+    creator_id: int
+    created_at: Optional[date] = None
+    updated_at: Optional[date] = None
+    organization_id: int
+
+    class Config:
+        from_attributes=True
 

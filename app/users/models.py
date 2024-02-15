@@ -32,7 +32,7 @@ class User(Base):
     role = relationship("Roles", back_populates="users")
 
     created_messages = relationship("Messages", foreign_keys=[Messages.creator_id], back_populates="creator")
-    assigned_messages = relationship("Messages", foreign_keys=[Messages.assigned_id], back_populates="assigned")
+    #assigned_messages = relationship("Messages", foreign_keys=[Messages.assigned_id], back_populates="assigned")
     created_tickets = relationship("Ticket", foreign_keys=[Ticket.creator_id], back_populates="creator")
     assigned_tickets = relationship("Ticket", foreign_keys=[Ticket.assigned_id], back_populates="assigned")
 

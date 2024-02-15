@@ -1,5 +1,7 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
+
+from app.messages.schemas import SMessage
 
 class UserSchema(BaseModel):
     id: int
@@ -13,6 +15,7 @@ class UserSchema(BaseModel):
     contact_tel: Optional[str]
     organiztion_id: int
     role_id: int
+    messages: Optional[List[SMessage]] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True

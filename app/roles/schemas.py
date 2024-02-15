@@ -8,4 +8,4 @@ class RoleSchema(BaseModel):
     users: List[UserSchema]
 
     class Config:
-        orm_mode = True
+        from_attributes = True

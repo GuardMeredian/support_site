@@ -11,23 +11,23 @@ class BaseDAO(Generic[T]):
     @classmethod
     async def find_one_or_none(cls, **filter_by) -> Optional[T]:
         async with async_session_maker() as session:
-            query = select(cls.model).filter_by(**filter_by)
+            query = select(cls.model.__table__.columns).filter_by(**filter_by)
             result = await session.execute(query)
-            return result.scalar_one_or_none()
+            return result.mappings().one_or_none()
 
     @classmethod
     async def find_all(cls) -> list[T]:
         async with async_session_maker() as session:
-            query = select(cls.model)
+            query = select(cls.model.__table__.columns)
             result = await session.execute(query)
             return result.mappings().all()
 
     @classmethod
     async def create(cls, **values) -> T:
         async with async_session_maker() as session:
-            stmt = insert(cls.model).values(**values)
+            stmt = insert(cls.model.__table__.columns).values(**values)
             result = await session.execute(stmt)
-            return result.scalar_one()
+            return result.mapings().one()
 
     @classmethod
     async def update(cls, **filter_by) -> None:

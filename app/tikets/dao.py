@@ -1,9 +1,10 @@
-from typing import Generic, TypeVar
-from sqlalchemy import insert, select, update
+from typing import Generic, Optional, TypeVar
+from sqlalchemy import select, join
+from sqlalchemy.orm import joinedload
 from app.tikets.models import Ticket
 from app.database import async_session_maker
 from app.DAO.base import BaseDAO
-from app.tikets.schemas import TicketSchema
+from app.tikets.schemas import SCreateTicket, SDetailTicket
 
 T = TypeVar('T')
 
@@ -51,30 +52,6 @@ class TicketDAO(BaseDAO[Ticket]):
             query = select([column for column in cls.model.__table__.columns]).filter_by(status_id=2)  # Assuming   2 is the ID for closed status
             result = await session.execute(query)
             return result.mappings().all()
-
-    @classmethod
-    async def assign_ticket(cls, ticket_id: int, assignee_id: int) -> Ticket:
-        async with async_session_maker() as session:
-            stmt = update(cls.model).where(cls.model.id == ticket_id).values(assigned_id=assignee_id)
-            await session.execute(stmt)
-            await session.commit()
-            return await cls.find_one_or_none(id=ticket_id)
-
-    @classmethod
-    async def change_ticket_status(cls, ticket_id: int, status_id: int) -> Ticket:
-        async with async_session_maker() as session:
-            stmt = update(cls.model).where(cls.model.id == ticket_id).values(status_id=status_id)
-            await session.execute(stmt)
-            await session.commit()
-            return await cls.find_one_or_none(id=ticket_id)
-
-    @classmethod
-    async def update_ticket_priority(cls, ticket_id: int, priority: int) -> Ticket:
-        async with async_session_maker() as session:
-            stmt = update(cls.model).where(cls.model.id == ticket_id).values(priority=priority)
-            await session.execute(stmt)
-            await session.commit()
-            return await cls.find_one_or_none(id=ticket_id)
     
     @classmethod
     async def get_all_tickets(cls, **filter_by) -> list[Ticket]:
@@ -84,8 +61,8 @@ class TicketDAO(BaseDAO[Ticket]):
             tickets = result.mappings().all()
             return tickets
         
-    @classmethod
-    async def update_ticket(cls, ticket_id: int, ticket_data: TicketSchema) -> Ticket:
+    """@classmethod
+    async def update_ticket(cls, ticket_id: int, ticket_data: SDetailTicket) -> Ticket:
         async with async_session_maker() as session:
         # Преобразование данных тикета в словарь для обновления, исключая неустановленные поля
             ticket_data_dict = ticket_data.model_dump(exclude_unset=True)
@@ -98,19 +75,24 @@ class TicketDAO(BaseDAO[Ticket]):
             await session.execute(stmt)
             await session.commit()
         # Возвращение обновленного тикета
-            return await cls.find_one_or_none(id=ticket_id)
+            return await cls.find_one_or_none(id=ticket_id)"""
 
     @classmethod
-    async def create_ticket(cls, ticket_data: TicketSchema) -> Ticket:
+    async def create_ticket(cls, ticket_data: SCreateTicket) -> Ticket:
         async with async_session_maker() as session:
             # Преобразование данных тикета в словарь для вставки, исключая неустановленные поля
-            ticket_data_dict = ticket_data.dict(exclude_unset=True)
-            # Удаление ключей отношений, так как они не должны быть вставлены напрямую
-            ticket_data_dict.pop('messages', None)
-            ticket_data_dict.pop('attachments', None)
-            # Создаем новый тикет
-            stmt = insert(cls.model).values(**ticket_data.model_dump(exclude_unset=True))
-            result = await session.execute(stmt)
-            new_ticket = result.mappings().one()
+            ticket_data_dict = ticket_data.model_dump(exclude_unset=True)
+            new_ticket = cls.model(**ticket_data_dict)
+            session.add(new_ticket)
+            await session.flush()
             await session.commit()
             return new_ticket
+
+    @classmethod
+    async def get_ticket_with_messages(cls, ticket_id: int) -> Optional[Ticket]:
+        async with async_session_maker() as session:
+            # Используем joinedload для оптимизации запроса
+            query = select(cls.model).options(joinedload(cls.model.messages)).where(cls.model.id == ticket_id)
+            result = await session.execute(query)
+            ticket = result.mappings().first()
+            return ticket
