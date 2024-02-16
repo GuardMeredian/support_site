@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
+from app.attachments.schemas import SAttachment
 from app.tikets.dao import TicketDAO
 from app.tikets.models import Ticket
 from app.tikets.schemas import STicketSummury, SDetailTicket, SCreateTicket
-from typing import List
+from typing import List, Optional
 
 
 router = APIRouter(
@@ -16,8 +17,8 @@ async def get_all_tickets():
     return tickets
 
 @router.get("/{ticket_id}", response_model=SDetailTicket)
-async def get_detail_ticket(ticket_id: int, ticket_data: SDetailTicket):
-    ticket = await TicketDAO.get_ticket_with_messages(ticket_id, ticket_data)
+async def get_detail_ticket(ticket_id: int):
+    ticket = await TicketDAO.get_ticket_with_messages(ticket_id)
     if not ticket:
         raise HTTPException(status_code=404, detail="Тикет не найден")
     return ticket
@@ -37,10 +38,10 @@ async def update_ticket(ticket_id: int, ticket_data: SDetailTicket):
     return updated_ticket"""
 
 @router.post("/add_ticket", response_model=SCreateTicket)
-async def create_ticket(ticket_data: SCreateTicket):
+async def create_ticket(ticket_data: SCreateTicket, attachments:UploadFile):
     # Создаем новый тикет в базе данных
     try:
-        new_ticket = await TicketDAO.create_ticket(ticket_data)
+        new_ticket = await TicketDAO.create_ticket(ticket_data, attachments)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

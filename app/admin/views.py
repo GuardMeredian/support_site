@@ -69,6 +69,7 @@ class MessagesAdmin(ModelView, model=Messages):
 
 class AttachmentsAdmin(ModelView, model=Attachments):
     column_list = '__all__'
+    form_overrides = dict(file_data=wtforms.FileField)
     name = "Файл"
     name_plural = "Файлы"
     icon = "fa-solid fa-folder"

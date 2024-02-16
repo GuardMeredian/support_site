@@ -1,6 +1,8 @@
-from typing import Generic, Optional, TypeVar
+from typing import Generic, List, Optional, TypeVar
+from fastapi import File, UploadFile
 from sqlalchemy import select, join
 from sqlalchemy.orm import joinedload
+from app.attachments.models import Attachments
 from app.tikets.models import Ticket
 from app.database import async_session_maker
 from app.DAO.base import BaseDAO
@@ -78,21 +80,38 @@ class TicketDAO(BaseDAO[Ticket]):
             return await cls.find_one_or_none(id=ticket_id)"""
 
     @classmethod
-    async def create_ticket(cls, ticket_data: SCreateTicket) -> Ticket:
+    async def create_ticket(cls, ticket_data: SCreateTicket, attachments: List[UploadFile] = None) -> Ticket:
         async with async_session_maker() as session:
             # Преобразование данных тикета в словарь для вставки, исключая неустановленные поля
             ticket_data_dict = ticket_data.model_dump(exclude_unset=True)
             new_ticket = cls.model(**ticket_data_dict)
             session.add(new_ticket)
             await session.flush()
+            if attachments:
+                for attachment in attachments:
+                    # Сохраняем файл в папку attachments/files
+                    file_path = f"attachments/files/{attachment.filename}"
+                    with open(file_path, "wb") as buffer:
+                        contents = await attachment.read()
+                        buffer.write(contents)
+
+                    # Создаем запись в базе данных для файла
+                    attachment_record = Attachments(
+                        ticket_id=new_ticket.id,
+                        filename=attachment.filename,
+                        file_path=file_path
+                )
+                session.add(attachment_record)
             await session.commit()
             return new_ticket
+            #return new_ticket
 
     @classmethod
-    async def get_ticket_with_messages(cls, ticket_id: int) -> Optional[Ticket]:
+    async def get_ticket_with_messages(cls, ticket_id: int) -> Ticket:
         async with async_session_maker() as session:
             # Используем joinedload для оптимизации запроса
             query = select(cls.model).options(joinedload(cls.model.messages)).where(cls.model.id == ticket_id)
             result = await session.execute(query)
             ticket = result.mappings().first()
-            return ticket
+            ticket_detail = ticket['Ticket']
+            return ticket_detail

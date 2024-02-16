@@ -15,12 +15,12 @@ class Ticket(Base):
     priority: Mapped[int] = mapped_column(default=1)
     creator_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
     assigned_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(default=date.today())
-    updated_at: Mapped[datetime] = mapped_column(default=date.today(), onupdate=date.today())
-
+    created_at: Mapped[date] = mapped_column(default=date.today())
+    updated_at: Mapped[date] = mapped_column(default=date.today(), onupdate=date.today())
     organization_id: Mapped[int] = mapped_column(ForeignKey('organizations.id'), nullable=False)  # Добавлен внешний ключ
     organization = relationship("Organization", back_populates="tickets")  # Отношение к Organization
     messages = relationship("Messages", back_populates="ticket")
+    attachments = relationship("Attachments", back_populates="ticket")
     # ... другие поля и отношения ...
 
     creator = relationship("User", foreign_keys=[creator_id], back_populates="created_tickets")
