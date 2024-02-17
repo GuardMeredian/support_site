@@ -8,7 +8,7 @@ from app.attachments.schemas import SAttachment
 from app.messages.schemas import SMessage
 from app.tikets.dao import TicketDAO
 from app.tikets.models import Ticket
-from app.tikets.schemas import STicketSummury, SDetailTicket, SCreateTicket
+from app.tikets.schemas import STicketSummury, SDetailTicket, SCreateTicket, SUpdateTicket
 from typing import Annotated, Dict, List, Optional
 import gzip
 from app.database import async_session_maker
@@ -31,8 +31,8 @@ async def get_detail_ticket(ticket_id: int) -> Ticket:
         raise HTTPException(status_code=404, detail="Тикет не найден")
     return ticket
 
-@router.put("/{ticket_id}", response_model=SDetailTicket)
-async def update_ticket(ticket_id: int, ticket_data: SDetailTicket):
+@router.put("/{ticket_id}", response_model=SUpdateTicket)
+async def update_ticket(ticket_id: int, ticket_data: Annotated[SUpdateTicket, Depends()]):
     # Проверяем, существует ли тикет с указанным ID
     ticket = await TicketDAO.find_one_or_none(id=ticket_id)
     if not ticket:

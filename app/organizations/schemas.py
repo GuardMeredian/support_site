@@ -8,3 +8,10 @@ class OrganizationSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class SOrgForTicket(BaseModel):
+    lpucode: int
+
+    class Config:
+        from_attributes = True

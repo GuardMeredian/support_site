@@ -9,7 +9,7 @@ from app.messages.schemas import SMessage
 from app.tikets.models import Ticket
 from app.database import async_session_maker
 from app.DAO.base import BaseDAO
-from app.tikets.schemas import SCreateTicket, SDetailTicket
+from app.tikets.schemas import SCreateTicket, SUpdateTicket
 from app.messages.models import Messages
 
 T = TypeVar('T')
@@ -68,14 +68,11 @@ class TicketDAO(BaseDAO[Ticket]):
             return tickets
         
     @classmethod
-    async def update_ticket(cls, ticket_id: int, ticket_data: SDetailTicket) -> Ticket:
+    async def update_ticket(cls, ticket_id: int, ticket_data: SUpdateTicket) -> Ticket:
         async with async_session_maker() as session:
         # Преобразование данных тикета в словарь для обновления, исключая неустановленные поля
             ticket_data_dict = ticket_data.model_dump(exclude_unset=True)
         # Удаление ключа 'id', так как он не должен быть обновлен
-            ticket_data_dict.pop('id', None)
-            ticket_data_dict.pop('messages', None)
-            ticket_data_dict.pop('attachments', None)
         # Обновление данных тикета
             stmt = update(cls.model).where(cls.model.id == ticket_id).values(**ticket_data_dict)
             await session.execute(stmt)
@@ -99,7 +96,12 @@ class TicketDAO(BaseDAO[Ticket]):
     async def get_ticket_with_messages(cls, ticket_id: int) -> Ticket:
         async with async_session_maker() as session:
             # Используем joinedload для оптимизации запроса
-            query = select(cls.model).options(joinedload(cls.model.messages),joinedload(cls.model.attachments)).where(cls.model.id == ticket_id)
+            query = select(cls.model).options(joinedload(cls.model.messages),
+                                              joinedload(cls.model.attachments),
+                                              joinedload(cls.model.creator),
+                                              joinedload(cls.model.organization),
+                                              joinedload(cls.model.assigned)
+                                              ).where(cls.model.id == ticket_id)
             result = await session.execute(query)
             ticket = result.mappings().first()
             ticket_detail = ticket['Ticket']
