@@ -3,7 +3,7 @@ from typing import Optional, List
 from datetime import datetime
 
 class SMessage(BaseModel):
-    id: Optional[int] = None
+    #id: Optional[int] = None
     content: str
     ticket_id: int
     creator_id: int

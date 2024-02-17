@@ -1,12 +1,16 @@
-from typing import Generic, List, Optional, TypeVar
-from fastapi import File, UploadFile
-from sqlalchemy import select, join
+import os
+import shutil
+from typing import Annotated, Generic, List, Optional, TypeVar
+from fastapi import Depends, File, UploadFile
+from sqlalchemy import select, join, update
 from sqlalchemy.orm import joinedload
 from app.attachments.models import Attachments
+from app.messages.schemas import SMessage
 from app.tikets.models import Ticket
 from app.database import async_session_maker
 from app.DAO.base import BaseDAO
 from app.tikets.schemas import SCreateTicket, SDetailTicket
+from app.messages.models import Messages
 
 T = TypeVar('T')
 
@@ -63,7 +67,7 @@ class TicketDAO(BaseDAO[Ticket]):
             tickets = result.mappings().all()
             return tickets
         
-    """@classmethod
+    @classmethod
     async def update_ticket(cls, ticket_id: int, ticket_data: SDetailTicket) -> Ticket:
         async with async_session_maker() as session:
         # Преобразование данных тикета в словарь для обновления, исключая неустановленные поля
@@ -77,31 +81,16 @@ class TicketDAO(BaseDAO[Ticket]):
             await session.execute(stmt)
             await session.commit()
         # Возвращение обновленного тикета
-            return await cls.find_one_or_none(id=ticket_id)"""
+            return await cls.find_one_or_none(id=ticket_id)
 
     @classmethod
-    async def create_ticket(cls, ticket_data: SCreateTicket, attachments: List[UploadFile] = None) -> Ticket:
+    async def create_ticket(cls, ticket_data: SCreateTicket) -> Ticket:
         async with async_session_maker() as session:
             # Преобразование данных тикета в словарь для вставки, исключая неустановленные поля
             ticket_data_dict = ticket_data.model_dump(exclude_unset=True)
             new_ticket = cls.model(**ticket_data_dict)
             session.add(new_ticket)
-            await session.flush()
-            if attachments:
-                for attachment in attachments:
-                    # Сохраняем файл в папку attachments/files
-                    file_path = f"attachments/files/{attachment.filename}"
-                    with open(file_path, "wb") as buffer:
-                        contents = await attachment.read()
-                        buffer.write(contents)
-
-                    # Создаем запись в базе данных для файла
-                    attachment_record = Attachments(
-                        ticket_id=new_ticket.id,
-                        filename=attachment.filename,
-                        file_path=file_path
-                )
-                session.add(attachment_record)
+            await session.flush()  # Сначала добавляем тикет, чтобы получить его ID
             await session.commit()
             return new_ticket
             #return new_ticket
@@ -110,8 +99,23 @@ class TicketDAO(BaseDAO[Ticket]):
     async def get_ticket_with_messages(cls, ticket_id: int) -> Ticket:
         async with async_session_maker() as session:
             # Используем joinedload для оптимизации запроса
-            query = select(cls.model).options(joinedload(cls.model.messages)).where(cls.model.id == ticket_id)
+            query = select(cls.model).options(joinedload(cls.model.messages),joinedload(cls.model.attachments)).where(cls.model.id == ticket_id)
             result = await session.execute(query)
             ticket = result.mappings().first()
             ticket_detail = ticket['Ticket']
             return ticket_detail
+        
+    @classmethod
+    async def add_message(cls, ticket_id: int, message_data: SMessage) -> SMessage:
+        async with async_session_maker() as session:
+            # Создаем новый объект сообщения
+            new_message = Messages(
+                content=message_data.content,
+                creator_id=message_data.creator_id,
+                ticket_id=ticket_id  # Связываем с тикетом по id
+            )
+            session.add(new_message)
+            await session.commit()
+
+        # Возвращаем созданное сообщение
+        return new_message    

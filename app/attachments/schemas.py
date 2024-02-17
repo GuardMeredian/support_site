@@ -3,10 +3,10 @@ from typing import Optional, List
 from datetime import datetime
 
 class SAttachment(BaseModel):
-    id: int
-    ticket_id: int
-    filename: str
-    file_path: str
+    id: Optional[int]
+    ticket_id: Optional[int]
+    filename: Optional[str]
+    file_url: str
     #message_id: Optional[int] = None
 
     class Config:

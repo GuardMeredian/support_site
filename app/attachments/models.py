@@ -8,7 +8,7 @@ class Attachments(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     filename: Mapped[str] = mapped_column(nullable=False)
-    file_path: Mapped[str]= mapped_column(nullable=False)
+    file_url: Mapped[str] = mapped_column(nullable=False)  # Добавлено новое поле для ссылки на файл
     ticket_id: Mapped[int] = mapped_column(ForeignKey('tickets.id'))
     #message_id: Mapped[int] = mapped_column(ForeignKey('messages.id'))
 
