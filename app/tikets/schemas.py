@@ -6,12 +6,13 @@ from app.attachments.schemas import SAttachment
 from app.messages.schemas import SMessage
 from app.users.schemas import SUserForTicket
 from app.organizations.schemas import SOrgForTicket
+from app.status.schemas import SStatus
 
 class SDetailTicket(BaseModel):
     #id: int
     title: str
     description: str
-    status_id: int
+    status: SStatus
     priority: Optional[int] = None
     creator: SUserForTicket
     assigned: Optional[SUserForTicket] = None
@@ -56,6 +57,7 @@ class SCreateTicket(BaseModel):
 class SUpdateTicket(BaseModel):
     title: str
     description: str
+    
 
     class Config:
         from_attributes = True

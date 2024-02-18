@@ -96,11 +96,14 @@ class TicketDAO(BaseDAO[Ticket]):
     async def get_ticket_with_messages(cls, ticket_id: int) -> Ticket:
         async with async_session_maker() as session:
             # Используем joinedload для оптимизации запроса
-            query = select(cls.model).options(joinedload(cls.model.messages),
+            query = select(cls.model).options(joinedload(cls.model.messages).options(
+                joinedload(Messages.creator)  # Загружаем данные автора сообщения
+            ),
                                               joinedload(cls.model.attachments),
                                               joinedload(cls.model.creator),
                                               joinedload(cls.model.organization),
-                                              joinedload(cls.model.assigned)
+                                              joinedload(cls.model.assigned),
+                                              joinedload(cls.model.status)
                                               ).where(cls.model.id == ticket_id)
             result = await session.execute(query)
             ticket = result.mappings().first()
