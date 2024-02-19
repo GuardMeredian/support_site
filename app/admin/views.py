@@ -7,7 +7,7 @@ from app.status.models import Status
 from app.tikets.models import Ticket
 from app.users.dao import UserDAO
 from sqladmin import ModelView
-import wtforms
+from wtforms import PasswordField, StringField 
 
 
 
@@ -17,7 +17,7 @@ class UserAdmin(ModelView, model=User):
     column_details_exclude_list = [User.created_messages, User.created_tickets,
                                    User.assigned_tickets, User.organization_id, User.role_id]
     form_excluded_columns = ['created_messages', 'created_tickets', 'assigned_tickets']
-    #form_overrides = dict(password=wtforms.PasswordField)                               
+    form_overrides = dict(password=PasswordField)                               
     name = "Пользователь"
     name_plural = "Пользователи"
     icon = "fa-solid fa-users"

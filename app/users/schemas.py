@@ -39,3 +39,11 @@ class SUserForOrg(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class SUserAuth(BaseModel):
+    login:str
+    password:str
+
+    class Config:
+        from_attributes = True
