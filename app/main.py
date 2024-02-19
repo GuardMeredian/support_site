@@ -3,6 +3,7 @@ from sqladmin import Admin
 from app.database import engine
 from app.admin.views import UserAdmin, RoleAdmin,StatusAdmin, OrganizationAdmin, TicketAdmin, MessagesAdmin, AttachmentsAdmin
 from app.tikets.router import router as tickets_router
+from app.organizations.router import router as orgs_router
 
 
 
@@ -10,6 +11,7 @@ app = FastAPI()
 admin = Admin(app, engine)
 
 app.include_router(tickets_router)
+app.include_router(orgs_router)
 
 
 

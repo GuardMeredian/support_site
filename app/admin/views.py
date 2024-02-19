@@ -6,9 +6,9 @@ from app.roles.models import Roles
 from app.status.models import Status
 from app.tikets.models import Ticket
 from app.users.dao import UserDAO
-from app.auth.auth import pwd_context
 from sqladmin import ModelView
 import wtforms
+
 
 
 class UserAdmin(ModelView, model=User):
@@ -17,20 +17,10 @@ class UserAdmin(ModelView, model=User):
     column_details_exclude_list = [User.created_messages, User.created_tickets,
                                    User.assigned_tickets, User.organization_id, User.role_id]
     form_excluded_columns = ['created_messages', 'created_tickets', 'assigned_tickets']
-    form_overrides = dict(password=wtforms.PasswordField)                               
+    #form_overrides = dict(password=wtforms.PasswordField)                               
     name = "Пользователь"
     name_plural = "Пользователи"
     icon = "fa-solid fa-users"
-
-    """async def on_model_change(self, data, model, is_created, is_updated):
-        if is_updated and 'password' in data:
-            # Хешируем пароль
-            hashed_password = pwd_context.hash(data['password'])
-            # Обновляем пароль пользователя
-            await UserDAO.update_password(model.id, hashed_password)
-        else: 
-            print("не получилося")"""
-
 
 
 
@@ -69,7 +59,7 @@ class MessagesAdmin(ModelView, model=Messages):
 
 class AttachmentsAdmin(ModelView, model=Attachments):
     column_list = '__all__'
-    form_overrides = dict(file_data=wtforms.FileField)
+    #form_overrides = dict(file_data=wtforms.FileField)
     name = "Файл"
     name_plural = "Файлы"
     icon = "fa-solid fa-folder"

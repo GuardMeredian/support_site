@@ -30,4 +30,12 @@ class SUserForTicket(BaseModel):
         from_attributes = True
 
 
-    
+class SUserForOrg(BaseModel):
+    surname: str
+    name: str
+    secname: str
+    post:str
+    contact_tel: str
+
+    class Config:
+        from_attributes = True

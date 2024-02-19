@@ -1,16 +1,14 @@
-import base64
+
 import os
 import shutil
-from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from app.attachments.models import Attachments
-from app.attachments.schemas import SAttachment
 from app.messages.schemas import SMessage
 from app.tikets.dao import TicketDAO
 from app.tikets.models import Ticket
 from app.tikets.schemas import STicketSummury, SDetailTicket, SCreateTicket, SUpdateTicket
-from typing import Annotated, Dict, List, Optional
-import gzip
+from typing import Annotated, Dict, List
 from app.database import async_session_maker
 
 

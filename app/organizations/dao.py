@@ -5,6 +5,7 @@ from app.DAO.base import BaseDAO
 from app.users.models import User
 from app.database import async_session_maker
 from app.organizations.models import Organization
+from sqlalchemy.orm import joinedload
 
 T = TypeVar('T')
 
@@ -91,3 +92,23 @@ class OrganizationDAO(BaseDAO[Organization]):
     async def find_organizations_by_creation_date(cls, start_date: datetime, end_date: datetime) -> list[Organization]:
         # Здесь должен быть код для поиска организаций по дате создания
         pass
+
+    @classmethod
+    async def get_orgs(cls, **filter_by) -> list[Organization]:
+        async with async_session_maker() as session:
+            query = select(cls.model.__table__.columns).filter(**filter_by).order_by(cls.model.lpucode)
+            result = await session.execute(query)
+            tickets = result.mappings().all()
+            return tickets
+        
+    @classmethod
+    async def get_org_card(cls, organization_id: int) -> Organization:
+        async with async_session_maker() as session:
+            # Используем joinedload для оптимизации запроса
+            query = select(cls.model).options(joinedload(cls.model.users)).where(cls.model.id == organization_id)
+            result = await session.execute(query)
+            ticket = result.mappings().first()
+            ticket_detail = ticket['Organization']
+            return ticket_detail
+        
+    

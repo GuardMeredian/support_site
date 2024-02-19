@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
+from app.users.schemas import SUserForOrg
 
 class OrganizationSchema(BaseModel):
     id: Optional[int] = None
@@ -12,6 +13,14 @@ class OrganizationSchema(BaseModel):
 
 class SOrgForTicket(BaseModel):
     lpucode: int
+
+    class Config:
+        from_attributes = True
+
+class SOrgCard(BaseModel):
+    lpucode: int
+    name: str
+    users: List[SUserForOrg]
 
     class Config:
         from_attributes = True
