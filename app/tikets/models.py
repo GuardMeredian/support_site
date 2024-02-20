@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 from sqlalchemy import ForeignKey
-from datetime import datetime, date
-from app.status.models import Status
+from datetime import date
+from app.tikets.status.models import Status
 
-
+""""Модель заявки"""
 class Ticket(Base):
     __tablename__ = 'tickets'
 
@@ -17,11 +17,11 @@ class Ticket(Base):
     assigned_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=True)
     created_at: Mapped[date] = mapped_column(default=date.today())
     updated_at: Mapped[date] = mapped_column(default=date.today(), onupdate=date.today())
-    organization_id: Mapped[int] = mapped_column(ForeignKey('organizations.id'), nullable=False)  # Добавлен внешний ключ
-    organization = relationship("Organization", back_populates="tickets")  # Отношение к Organization
+    organization_id: Mapped[int] = mapped_column(ForeignKey('organizations.id'), nullable=False) 
+    organization = relationship("Organization", back_populates="tickets")  
     messages = relationship("Messages", back_populates="ticket")
     attachments = relationship("Attachments", back_populates="ticket")
-    # ... другие поля и отношения ...
+    
 
     creator = relationship("User", foreign_keys=[creator_id], back_populates="created_tickets")
     assigned = relationship("User", foreign_keys=[assigned_id], back_populates="assigned_tickets")

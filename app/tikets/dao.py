@@ -1,71 +1,18 @@
-import os
-import shutil
-from typing import Annotated, Generic, List, Optional, TypeVar
-from fastapi import Depends, File, UploadFile
-from sqlalchemy import select, join, update
+from typing import List, TypeVar
+from sqlalchemy import select, update
 from sqlalchemy.orm import joinedload
-from app.attachments.models import Attachments
-from app.messages.schemas import SMessage
+from app.tikets.messages.schemas import SMessage
 from app.tikets.models import Ticket
 from app.database import async_session_maker
 from app.DAO.base import BaseDAO
 from app.tikets.schemas import SCreateTicket, SUpdateTicket
-from app.messages.models import Messages
+from app.tikets.messages.models import Messages
 
 T = TypeVar('T')
 
 class TicketDAO(BaseDAO[Ticket]):
     model = Ticket
     
-    @classmethod
-    async def find_by_status(cls, status_id: int) -> list[Ticket]:
-        async with async_session_maker() as session:
-            query = select([column for column in cls.model.__table__.columns]).filter_by(status_id=status_id)
-            result = await session.execute(query)
-            return result.mappings().all()
-
-    @classmethod
-    async def find_by_priority(cls, priority: int) -> list[Ticket]:
-        async with async_session_maker() as session:
-            query = select([column for column in cls.model.__table__.columns]).filter_by(priority=priority)
-            result = await session.execute(query)
-            return result.mappings().all()
-
-    @classmethod
-    async def find_by_creator(cls, creator_id: int) -> list[Ticket]:
-        async with async_session_maker() as session:
-            query = select([column for column in cls.model.__table__.columns]).filter_by(creator_id=creator_id)
-            result = await session.execute(query)
-            return result.mappings().all()
-
-    @classmethod
-    async def find_by_assignee(cls, assigned_id: int) -> list[Ticket]:
-        async with async_session_maker() as session:
-            query = select([column for column in cls.model.__table__.columns]).filter_by(assigned_id=assigned_id)
-            result = await session.execute(query)
-            return result.mappings().all()
-
-    @classmethod
-    async def find_open_tickets(cls) -> list[Ticket]:
-        async with async_session_maker() as session:
-            query = select([column for column in cls.model.__table__.columns]).filter_by(status_id=1)  # Assuming   1 is the ID for open status
-            result = await session.execute(query)
-            return result.mappings().all()
-
-    @classmethod
-    async def find_closed_tickets(cls) -> list[Ticket]:
-        async with async_session_maker() as session:
-            query = select([column for column in cls.model.__table__.columns]).filter_by(status_id=2)  # Assuming   2 is the ID for closed status
-            result = await session.execute(query)
-            return result.mappings().all()
-    
-    @classmethod
-    async def get_all_tickets(cls, **filter_by) -> list[Ticket]:
-        async with async_session_maker() as session:
-            query = select(cls.model.__table__.columns).filter(**filter_by)
-            result = await session.execute(query)
-            tickets = result.mappings().all()
-            return tickets
         
     @classmethod
     async def update_ticket(cls, ticket_id: int, ticket_data: SUpdateTicket) -> Ticket:
@@ -123,4 +70,11 @@ class TicketDAO(BaseDAO[Ticket]):
             await session.commit()
 
         # Возвращаем созданное сообщение
-        return new_message    
+        return new_message
+    @classmethod
+
+    async def get_tickets_by_org(cls, organization_id: int) -> List[Ticket]:
+        async with async_session_maker() as session:
+            query = select(cls.model).filter_by(organization_id=organization_id)
+            result = await session.execute(query)
+            return result.mappings().all()    

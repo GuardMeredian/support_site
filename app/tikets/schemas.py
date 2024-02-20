@@ -1,12 +1,11 @@
-from fastapi import UploadFile
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import date
-from app.attachments.schemas import SAttachment
-from app.messages.schemas import SMessage
+from app.tikets.attachments.schemas import SAttachment
+from app.tikets.messages.schemas import SMessage
 from app.users.schemas import SUserForTicket
 from app.organizations.schemas import SOrgForTicket
-from app.status.schemas import SStatus
+from app.tikets.status.schemas import SStatus
 
 class SDetailTicket(BaseModel):
     #id: int

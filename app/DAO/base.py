@@ -14,11 +14,19 @@ class BaseDAO(Generic[T]):
             query = select(cls.model.__table__.columns).filter_by(**filter_by)
             result = await session.execute(query)
             return result.mappings().one_or_none()
+        
+    @classmethod
+    async def find_by_id(cls, model_id: int):
+        async with async_session_maker() as session:
+            query = select(cls.model).filter_by(id=model_id)
+            result = await session.execute(query)
+            return result.mappings().first()
+
 
     @classmethod
-    async def find_all(cls) -> list[T]:
+    async def find_all(cls, **filter_by) -> list[T]:
         async with async_session_maker() as session:
-            query = select(cls.model.__table__.columns)
+            query = select(cls.model.__table__.columns).filter_by(**filter_by)
             result = await session.execute(query)
             return result.mappings().all()
 

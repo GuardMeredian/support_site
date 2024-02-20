@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
+"""Модель статуса"""
 class Status(Base):
    __tablename__ = "status"
 

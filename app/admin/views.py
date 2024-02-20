@@ -1,9 +1,9 @@
 from app.users.models import User
-from app.attachments.models import Attachments
-from app.messages.models import Messages
+from app.tikets.attachments.models import Attachments
+from app.tikets.messages.models import Messages
 from app.organizations.models import Organization
-from app.roles.models import Roles
-from app.status.models import Status
+from app.users.roles.models import Roles
+from app.tikets.status.models import Status
 from app.tikets.models import Ticket
 from app.users.dao import UserDAO
 from sqladmin import ModelView
@@ -47,6 +47,7 @@ class OrganizationAdmin(ModelView, model=Organization):
 
 class TicketAdmin(ModelView, model=Ticket):
     column_list = '__all__'
+    form_excluded_columns = ['messages', 'attachments']
     name = "Заявка"
     name_plural = "Заявки"
     icon = "fa-solid fa-ticket"

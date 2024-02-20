@@ -6,7 +6,7 @@ from app.users.schemas import SUserForTicket
 
 
 class SMessage(BaseModel):
-    id: Optional[int] = None
+    #id: Optional[int] = None
     content: str
     ticket_id: int
     creator: SUserForTicket
