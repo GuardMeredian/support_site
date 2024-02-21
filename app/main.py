@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from sqladmin import Admin
 from app.database import engine
-from app.admin.views import NewsAdmin, SystemAdmin, UserAdmin, RoleAdmin,StatusAdmin, OrganizationAdmin, TicketAdmin, MessagesAdmin, AttachmentsAdmin
+from app.admin.views import NewsAdmin, PeriodAdmin, SystemAdmin, UserAdmin, RoleAdmin,StatusAdmin, OrganizationAdmin, TicketAdmin, MessagesAdmin, AttachmentsAdmin
 from app.tikets.router import router as tickets_router
 from app.organizations.router import router as orgs_router
 from app.users.router import router as auth_router
@@ -28,3 +28,4 @@ admin.add_view(OrganizationAdmin)
 admin.add_view(TicketAdmin)
 admin.add_view(MessagesAdmin)
 admin.add_view(AttachmentsAdmin)
+admin.add_view(PeriodAdmin)

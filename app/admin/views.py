@@ -1,3 +1,4 @@
+import wtforms
 from app.users.models import User
 from app.tikets.attachments.models import Attachments
 from app.tikets.messages.models import Messages
@@ -7,9 +8,9 @@ from app.tikets.status.models import Status
 from app.tikets.models import Ticket
 from app.tikets.system.models import System
 from app.news.models import News
-from app.users.dao import UserDAO
+from app.EOBD.Period.models import Period
 from sqladmin import ModelView
-from wtforms import PasswordField, StringField 
+from wtforms import PasswordField
 
 
 
@@ -77,6 +78,14 @@ class SystemAdmin(ModelView, model=System):
 
 class NewsAdmin(ModelView, model=News):
     column_list = '__all__'
+    form_overrides = dict(content=wtforms.TextAreaField)
     name = "Новость"
     name_plural = "Новости"
-    icon = "fa-solid fa-newspaper-o"
+    icon = "fa-solid fa-podcast"
+
+class PeriodAdmin(ModelView, model=Period):
+    column_list = '__all__'
+    #form_overrides = dict(content=wtforms.TextAreaField)
+    name = "Период"
+    name_plural = "Периоды"
+    #icon = "fa-solid fa-podcast"
