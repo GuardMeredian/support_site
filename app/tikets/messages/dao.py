@@ -1,9 +1,9 @@
-from typing import Generic, List, Optional, TypeVar
-from sqlalchemy import insert, select, update, delete
+from typing import List, TypeVar
+from sqlalchemy import select
 from app.DAO.base import BaseDAO
 from app.database import async_session_maker
-from app.messages.models import Messages
-from app.messages.schemas import SMessage
+from app.tikets.messages.models import Messages
+from app.tikets.messages.schemas import SMessage
 
 T = TypeVar('T')
 

@@ -52,3 +52,7 @@ class TicketIsNotUpdateException(SupportException):
 class MessageIsNotAddException(SupportException):
     status_code=status.HTTP_400_BAD_REQUEST
     detail="Не удалось оставить сообщение"
+
+class NewsIsNotAddException(SupportException):
+    status_code=status.HTTP_400_BAD_REQUEST
+    detail="Не удалось создать новость"

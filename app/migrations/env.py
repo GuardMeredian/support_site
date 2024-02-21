@@ -14,6 +14,7 @@ from app.users.roles.models import Roles
 from app.tikets.status.models import Status
 from app.tikets.models import Ticket
 from app.tikets.system.models import System
+from app.news.models import News
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

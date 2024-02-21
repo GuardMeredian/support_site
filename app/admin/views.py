@@ -6,6 +6,7 @@ from app.users.roles.models import Roles
 from app.tikets.status.models import Status
 from app.tikets.models import Ticket
 from app.tikets.system.models import System
+from app.news.models import News
 from app.users.dao import UserDAO
 from sqladmin import ModelView
 from wtforms import PasswordField, StringField 
@@ -73,3 +74,9 @@ class SystemAdmin(ModelView, model=System):
     name = "Система"
     name_plural = "Системы"
     icon = "fa-solid fa-desktop"
+
+class NewsAdmin(ModelView, model=News):
+    column_list = '__all__'
+    name = "Новость"
+    name_plural = "Новости"
+    icon = "fa-solid fa-newspaper-o"

@@ -22,7 +22,7 @@ router = APIRouter(
 
 @router.get("/all_tickets", response_model=List[STicketSummury])
 async def get_all_tickets(current_user: dict = Depends(get_current_user)):# -> List[Ticket]:
-    user=current_user["User"]
+    user = current_user["User"]
     if user.role_id == 3:
         tickets = await TicketDAO.find_all(organization_id=user.organization_id)
     else:    
