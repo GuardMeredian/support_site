@@ -6,12 +6,14 @@ from app.tikets.messages.schemas import SMessage
 from app.users.schemas import SUserForTicket
 from app.organizations.schemas import SOrgForTicket
 from app.tikets.status.schemas import SStatus
+from app.tikets.system.schemas import SSystem
 
 class SDetailTicket(BaseModel):
-    #id: int
+    id: int
     title: str
     description: str
     status: SStatus
+    system: SSystem
     priority: Optional[int] = None
     creator: SUserForTicket
     assigned: Optional[SUserForTicket] = None
@@ -28,6 +30,7 @@ class STicketSummury(BaseModel):
     id: int 
     title: str
     status_id: int
+    system_id: int
     priority: Optional[int] = None
     creator_id: int
     assigned_id: Optional[int] = None

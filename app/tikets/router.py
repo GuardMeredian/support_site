@@ -26,7 +26,7 @@ async def get_all_tickets(current_user: dict = Depends(get_current_user)):# -> L
     if user.role_id == 3:
         tickets = await TicketDAO.find_all(organization_id=user.organization_id)
     else:    
-        tickets = await TicketDAO.get_all_tickets()
+        tickets = await TicketDAO.find_all()
     return tickets
 
 @router.get("/{ticket_id}", response_model=SDetailTicket)

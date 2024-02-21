@@ -50,7 +50,8 @@ class TicketDAO(BaseDAO[Ticket]):
                                               joinedload(cls.model.creator),
                                               joinedload(cls.model.organization),
                                               joinedload(cls.model.assigned),
-                                              joinedload(cls.model.status)
+                                              joinedload(cls.model.status),
+                                              joinedload(cls.model.system)
                                               ).where(cls.model.id == ticket_id)
             result = await session.execute(query)
             ticket = result.mappings().first()

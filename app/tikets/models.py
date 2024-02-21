@@ -11,6 +11,7 @@ class Ticket(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
+    system_id: Mapped[int] = mapped_column(ForeignKey('systems.id'), nullable=False)
     status_id: Mapped[int] = mapped_column(ForeignKey('status.id'), nullable=False)
     priority: Mapped[int] = mapped_column(default=1)
     creator_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
@@ -26,6 +27,7 @@ class Ticket(Base):
     creator = relationship("User", foreign_keys=[creator_id], back_populates="created_tickets")
     assigned = relationship("User", foreign_keys=[assigned_id], back_populates="assigned_tickets")
     status = relationship("Status", back_populates="tickets")
+    system = relationship("System", back_populates="tickets")
 
 
     def __str__(self):

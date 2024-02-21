@@ -8,11 +8,12 @@ from app.config import settings
 from app.database import Base
 from app.organizations.models import Organization
 from app.users.models import User
-from app.messages.models import Messages
-from app.attachments.models import Attachments
-from app.roles.models import Roles
-from app.status.models import Status
+from app.tikets.messages.models import Messages
+from app.tikets.attachments.models import Attachments
+from app.users.roles.models import Roles
+from app.tikets.status.models import Status
 from app.tikets.models import Ticket
+from app.tikets.system.models import System
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -5,6 +5,7 @@ from app.organizations.models import Organization
 from app.users.roles.models import Roles
 from app.tikets.status.models import Status
 from app.tikets.models import Ticket
+from app.tikets.system.models import System
 from app.users.dao import UserDAO
 from sqladmin import ModelView
 from wtforms import PasswordField, StringField 
@@ -46,7 +47,7 @@ class OrganizationAdmin(ModelView, model=Organization):
     icon = "fa-solid fa-sitemap"
 
 class TicketAdmin(ModelView, model=Ticket):
-    column_list = '__all__'
+    column_list = [Ticket.id, Ticket.organization, Ticket.creator, Ticket.assigned, Ticket.status, Ticket.system, Ticket.title, Ticket.created_at]
     form_excluded_columns = ['messages', 'attachments']
     name = "Заявка"
     name_plural = "Заявки"
@@ -64,3 +65,11 @@ class AttachmentsAdmin(ModelView, model=Attachments):
     name = "Файл"
     name_plural = "Файлы"
     icon = "fa-solid fa-folder"
+
+class SystemAdmin(ModelView, model=System):
+    column_list = '__all__'
+    form_excluded_columns = ['tickets']
+    #form_overrides = dict(file_data=wtforms.FileField)
+    name = "Система"
+    name_plural = "Системы"
+    icon = "fa-solid fa-desktop"
