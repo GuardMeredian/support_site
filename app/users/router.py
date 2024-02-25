@@ -1,4 +1,3 @@
-from typing import Annotated
 from fastapi import APIRouter, Depends, Response
 from app.users.auth import create_access_token
 from app.exceptions import UserIsNotPresentException
@@ -13,12 +12,12 @@ router = APIRouter(
 )
 
 @router.post("/login")
-async def login_user(response: Response, user_data:Annotated[SUserAuth, Depends()]):
+async def login_user(response: Response, user_data:SUserAuth):
     user = await authenticate_user(user_data.login, user_data.password)
     if not user:
         raise UserIsNotPresentException
     access_token = create_access_token({"sub": str(user.id)})
-    response.set_cookie(settings.COOCKIES_NAME_TOKEN, access_token, httponly=True)
+    response.set_cookie(settings.COOCKIES_NAME_TOKEN, access_token)
     return{"token":access_token}
 
 @router.post("/logout")

@@ -5,7 +5,7 @@ from app.tikets.messages.schemas import SMessage
 from app.tikets.models import Ticket
 from app.database import async_session_maker
 from app.DAO.base import BaseDAO
-from app.tikets.schemas import SCreateTicket, SUpdateTicket
+from app.tikets.schemas import SCreateTicket, STicketSummury, SUpdateTicket
 from app.tikets.messages.models import Messages
 
 T = TypeVar('T')
@@ -78,4 +78,36 @@ class TicketDAO(BaseDAO[Ticket]):
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(organization_id=organization_id)
             result = await session.execute(query)
-            return result.mappings().all()    
+            return result.mappings().all()
+
+    @classmethod
+    async def find_all_summary(cls, **filter_by) -> List[STicketSummury]:
+        async with async_session_maker() as session:
+        # Используйте joinedload для загрузки связанных объектов
+           query = select(cls.model).options(
+                joinedload(cls.model.status),
+                joinedload(cls.model.system),
+                joinedload(cls.model.creator),
+                joinedload(cls.model.organization)
+            ).filter_by(**filter_by)
+        result = await session.execute(query)
+         # Извлекаем все строки из результата запроса
+        tickets = result.scalars().all()
+            # Преобразуем каждый объект Ticket в словарь, соответствующий схеме STicketSummury
+        tickets_summary = [
+                STicketSummury(
+                    id=ticket.id,
+                    title=ticket.title,
+                    status=ticket.status,
+                    system=ticket.system,
+                    priority=ticket.priority,
+                    creator=ticket.creator,
+                    assigned_id=ticket.assigned_id,
+                    created_at=ticket.created_at,
+                    updated_at=ticket.updated_at,
+                    organization=ticket.organization
+                )
+                for ticket in tickets
+            ]
+        return tickets_summary
+        #return result.mappings().all()    

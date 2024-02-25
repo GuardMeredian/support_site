@@ -8,7 +8,7 @@ from app.tikets.status.models import Status
 from app.tikets.models import Ticket
 from app.tikets.system.models import System
 from app.news.models import News
-from app.EOBD.Period.models import Period
+#from app.EOBD.Period.models import Period
 from sqladmin import ModelView
 from wtforms import PasswordField
 
@@ -83,9 +83,9 @@ class NewsAdmin(ModelView, model=News):
     name_plural = "Новости"
     icon = "fa-solid fa-podcast"
 
-class PeriodAdmin(ModelView, model=Period):
+"""class PeriodAdmin(ModelView, model=Period):
     column_list = '__all__'
     #form_overrides = dict(content=wtforms.TextAreaField)
     name = "Период"
     name_plural = "Периоды"
-    #icon = "fa-solid fa-podcast"
+    #icon = "fa-solid fa-podcast"""

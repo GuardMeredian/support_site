@@ -1,4 +1,4 @@
-from datetime import date, datetime
+"""from datetime import date, datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import EobdBase
 
@@ -34,3 +34,4 @@ class Period(EobdBase):
 
     def __str__(self):
         return f"{self.NAME} ({self.COUNTER})"
+        """

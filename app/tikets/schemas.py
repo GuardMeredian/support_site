@@ -29,14 +29,14 @@ class SDetailTicket(BaseModel):
 class STicketSummury(BaseModel):
     id: int 
     title: str
-    status_id: int
-    system_id: int
+    status: SStatus
+    system: SSystem
     priority: Optional[int] = None
-    creator_id: int
+    creator: SUserForTicket
     assigned_id: Optional[int] = None
     created_at: Optional[date] = None
     updated_at: Optional[date] = None
-    organization_id: int
+    organization: SOrgForTicket
 
     class Config:
         from_attributes=True
