@@ -1,12 +1,13 @@
 from typing import List, TypeVar
 from sqlalchemy import select, update
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from app.tikets.messages.schemas import SMessage
 from app.tikets.models import Ticket
 from app.database import async_session_maker
 from app.DAO.base import BaseDAO
 from app.tikets.schemas import SCreateTicket, STicketSummury, SUpdateTicket
 from app.tikets.messages.models import Messages
+from app.users.models import User
 
 T = TypeVar('T')
 
@@ -61,19 +62,26 @@ class TicketDAO(BaseDAO[Ticket]):
     @classmethod
     async def add_message(cls, ticket_id: int, message_data: SMessage) -> SMessage:
         async with async_session_maker() as session:
+            # Получаем объект пользователя из базы данных по id
+            creator = await session.get(User, message_data.creator.id)
+            if not creator:
+                raise ValueError(f"User with id {message_data.creator.id} not found")
+
+
             # Создаем новый объект сообщения
             new_message = Messages(
                 content=message_data.content,
-                creator_id=message_data.creator_id,
-                ticket_id=ticket_id  # Связываем с тикетом по id
+                creator=creator,  # Используем объект creator, полученный из сессии
+                ticket_id=ticket_id,  # Связываем с тикетом по id
+                created_at=message_data.created_at  # Устанавливаем время создания сообщения
             )
             session.add(new_message)
             await session.commit()
 
         # Возвращаем созданное сообщение
         return new_message
-    @classmethod
 
+    @classmethod
     async def get_tickets_by_org(cls, organization_id: int) -> List[Ticket]:
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(organization_id=organization_id)
@@ -88,7 +96,8 @@ class TicketDAO(BaseDAO[Ticket]):
                 joinedload(cls.model.status),
                 joinedload(cls.model.system),
                 joinedload(cls.model.creator),
-                joinedload(cls.model.organization)
+                joinedload(cls.model.organization),
+                joinedload(cls.model.assigned)
             ).filter_by(**filter_by)
         result = await session.execute(query)
          # Извлекаем все строки из результата запроса
@@ -102,7 +111,7 @@ class TicketDAO(BaseDAO[Ticket]):
                     system=ticket.system,
                     priority=ticket.priority,
                     creator=ticket.creator,
-                    assigned_id=ticket.assigned_id,
+                    assigned=ticket.assigned,
                     created_at=ticket.created_at,
                     updated_at=ticket.updated_at,
                     organization=ticket.organization
@@ -110,4 +119,24 @@ class TicketDAO(BaseDAO[Ticket]):
                 for ticket in tickets
             ]
         return tickets_summary
-        #return result.mappings().all()    
+        #return result.mappings().all()
+        # 
+    @staticmethod
+    async def update_ticket_status(ticket_id: int, status_id: int):
+        async with async_session_maker() as session:
+            # Создаем запрос для выбора тикета с указанным ID
+            stmt = select(Ticket).where(Ticket.id == ticket_id)
+            # Загружаем связанные данные статуса
+            stmt = stmt.options(selectinload(Ticket.status))
+            # Выполняем запрос
+            result = await session.execute(stmt)
+            ticket = result.scalars().first()
+
+            if not ticket:
+                # Тикет не найден
+                return None
+            # Обновляем статус тикета
+            ticket.status_id = status_id
+            # Сохраняем изменения в базе данных
+            await session.commit()
+        return ticket    

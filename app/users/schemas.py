@@ -46,3 +46,12 @@ class SUserAuth(BaseModel):
 
     class Config:
         from_attributes = True
+
+class SUserForMsg(BaseModel):
+    id: int
+    surname: str
+    name: str
+    secname: str
+
+    class Config:
+        from_attributes = True

@@ -33,7 +33,7 @@ class STicketSummury(BaseModel):
     system: SSystem
     priority: Optional[int] = None
     creator: SUserForTicket
-    assigned_id: Optional[int] = None
+    assigned: Optional[SUserForTicket] = None
     created_at: Optional[date] = None
     updated_at: Optional[date] = None
     organization: SOrgForTicket
@@ -60,6 +60,13 @@ class SUpdateTicket(BaseModel):
     title: str
     description: str
     
+
+    class Config:
+        from_attributes = True
+
+
+class SUpdateTicketStatus(BaseModel):
+    status_id: int
 
     class Config:
         from_attributes = True

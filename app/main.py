@@ -7,6 +7,7 @@ from app.tikets.router import router as tickets_router
 from app.organizations.router import router as orgs_router
 from app.users.router import router as auth_router
 from app.news.router import router as news_router
+from app.tikets.status.router import router as status_router
 
 
 
@@ -28,6 +29,7 @@ app.include_router(auth_router)
 app.include_router(news_router)
 app.include_router(tickets_router)
 app.include_router(orgs_router)
+app.include_router(status_router)
 
 
 
