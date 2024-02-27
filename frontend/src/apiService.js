@@ -5,6 +5,7 @@ const apiClient = axios.create({
   withCredentials: true // Это позволит отправлять и получать куки
 })
 
+
 export default {
   login(credentials) {
     return apiClient.post('/auth/login', credentials)
@@ -12,8 +13,9 @@ export default {
   logout() {
     return apiClient.post('/auth/logout')
   },
-  getTickets() {
-    return apiClient.get('/tickets/all_tickets')
+  getTickets(filters = {}) {
+    const params = new URLSearchParams(filters).toString();
+  return apiClient.get(`/tickets/all_tickets?${params}`);
   },
   getTicketDetail(ticketId) {
     return apiClient.get(`/tickets/${ticketId}`)
@@ -34,9 +36,18 @@ export default {
   },
   getUserData() {
     return apiClient.get('/auth/user');
-  }
+  },
+  getSystems() {
+    return apiClient.get('/systems/')
+  },
+  createTicket(ticketData) {
+    return apiClient.post(`/tickets/add_ticket`, ticketData);
+  },
+  getOperators() {
+    return apiClient.get('auth/users/')
+  },
+  updateTicketOperator(ticketId, operator_id) {
+    return apiClient.put(`/tickets/${ticketId}/operator`, { assigned_id: operator_id });
+  },
   // Добавьте другие методы для взаимодействия с API по мере необходимости
 }
-
-
-

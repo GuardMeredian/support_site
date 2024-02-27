@@ -20,6 +20,7 @@ class SUser(BaseModel):
         from_attributes = True
 
 class SUserForTicket(BaseModel):
+    id: int
     surname: str
     name: str
     secname: str

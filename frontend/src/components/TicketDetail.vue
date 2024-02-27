@@ -32,10 +32,14 @@
           </tr>
           <tr>
             <th scope="row">Оператор</th>
-            <td>
-              <span v-if="ticket.assigned">{{ ticket.assigned.surname }}</span>
-              <span v-else>Не назначен</span>
-            </td>
+              <td>
+                <select v-model="selectedOperator" @change="updateOperator">
+                  <option v-for="operator in operators" :key="operator.id" :value="operator.id">
+                    {{ operator.surname }} {{ operator.name }} {{ operator.secname }}
+                  </option>
+                  <option v-if="!selectedOperator" value="">Не назначен</option>
+                </select>
+              </td>
           </tr>
           <tr>
             <th scope="row">Дата создания</th>
@@ -47,8 +51,8 @@
       <p>{{ ticket.description }}</p>
       <h4>Сообщения:</h4>
       <ul>
-        <li v-for="message in ticket.messages" :key="message.id">
-          {{ message.creator.surname }}: {{ message.content }} ({{ message.created_at }})
+        <li v-for="message in ticket.messages" :key="message.id" class="alert alert-info">
+          <strong>{{ message.creator.surname }} ({{ message.created_at }}):</strong> {{ message.content }}
         </li>
       </ul>
       <h4>Вложения:</h4>
@@ -81,20 +85,27 @@ const ticket = ref(null)
 const statuses = ref([])
 const selectedStatus = ref(null) // Инициализируем selectedStatus как null
 const newMessage = ref('')
+const operators = ref([]) // Инициализация массива операторов
+const selectedOperator = ref(null) // Инициализация выбранного оператора
 
 onMounted(async () => {
   try {
     const response = await apiService.getTicketDetail(route.params.ticketId);
     ticket.value = response.data;
     const statusesResponse = await apiService.getStatuses();
-    statuses.value = statusesResponse.data; // Убедитесь, что вы обращаетесь к data // Проверяем данные статусов
+    statuses.value = statusesResponse.data;
     if (ticket.value && ticket.value.status && ticket.value.status.id) {
       selectedStatus.value = ticket.value.status.id;
+    }
+    const OperatorsResponse = await apiService.getOperators();
+    operators.value = OperatorsResponse.data;
+    if (ticket.value && ticket.value.assigned) {
+      selectedOperator.value = ticket.value.assigned.id; // Устанавливаем selectedOperator в id назначенного оператора
     }
   } catch (error) {
     console.error('Ошибка при загрузке деталей тикета:', error);
   }
-})
+});
 
 const updateStatus = async () => {
   try {
@@ -105,6 +116,26 @@ const updateStatus = async () => {
     console.error('Ошибка при обновлении статуса тикета:', error)
   }
 }
+
+// Метод для обновления оператора
+const updateOperator = async () => {
+  try {
+    // Предполагается, что selectedOperator содержит id оператора
+    const operatorId = selectedOperator.value;
+    console.log('selectedOperator = ',selectedOperator.value)
+    if (operatorId) {
+      await apiService.updateTicketOperator(ticket.value.id, operatorId);
+      // Обновляем оператора тикета в локальном состоянии
+      ticket.value.assigned = operators.value.find(operator => operator.id === operatorId);
+      console.log(ticket.value)
+    } else {
+      console.error('Оператор не выбран');
+    }
+  } catch (error) {
+    console.error('Ошибка при обновлении оператора тикета:', error);
+  }
+};
+
 
 const addMessage = async () => {
   try {

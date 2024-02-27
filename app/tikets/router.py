@@ -1,14 +1,14 @@
 
 import os
 import shutil
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from app.tikets.attachments.models import Attachments
 from app.exceptions import MessageIsNotAddException, TicketIsNotAddException, TicketIsNotFoundException, TicketIsNotUpdateException, UserNotAuthException
 from app.tikets.messages.schemas import SMessage
 from app.tikets.dao import TicketDAO
 from app.tikets.models import Ticket
-from app.tikets.schemas import STicketSummury, SDetailTicket, SCreateTicket, SUpdateTicket, SUpdateTicketStatus
+from app.tikets.schemas import STicketSummury, SDetailTicket, SCreateTicket, SUpdateTicket, SUpdateTicketOperator, SUpdateTicketStatus
 from typing import Annotated, Dict, List
 from app.database import async_session_maker
 from app.users.dependescies import get_current_user
@@ -53,7 +53,7 @@ async def update_ticket(ticket_id: int, ticket_data: SDetailTicket, current_user
     return updated_ticket
 
 @router.post("/add_ticket", response_model=SCreateTicket)
-async def create_ticket(ticket_data: Annotated[SCreateTicket, Depends()], current_user: dict = Depends(get_current_user)):
+async def create_ticket(ticket_data: SCreateTicket, current_user: dict = Depends(get_current_user)):
     if not current_user:
         raise UserNotAuthException
         # Создаем новый тикет в базе данных
@@ -132,6 +132,23 @@ async def update_ticket_status(ticket_id: int, status_data: SUpdateTicketStatus,
 
     # Обновляем статус тикета в базе данных
     updated_ticket = await TicketDAO.update_ticket_status(ticket_id, status_data.status_id)
+    if not updated_ticket:
+        raise TicketIsNotFoundException
+
+    return updated_ticket
+
+@router.put("/{ticket_id}/operator", response_model=SUpdateTicketOperator)
+async def update_ticket_status(ticket_id: int, user_data: SUpdateTicketOperator, current_user: dict = Depends(get_current_user)):
+    if not current_user:
+        raise UserNotAuthException
+
+    # Проверяем, существует ли тикет с указанным ID
+    ticket = await TicketDAO.find_one_or_none(id=ticket_id)
+    if not ticket:
+        raise TicketIsNotFoundException
+
+    # Обновляем статус тикета в базе данных
+    updated_ticket = await TicketDAO.update_ticket_operator(ticket_id, user_data.assigned_id)
     if not updated_ticket:
         raise TicketIsNotFoundException
 

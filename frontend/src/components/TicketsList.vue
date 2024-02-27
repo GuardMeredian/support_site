@@ -1,6 +1,18 @@
 <template>
   <div class="container">
     <h2>Заявки</h2>
+    <hr>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTicketModal">
+      Создать заявку
+    </button>
+    <hr>
+    <CreateTicketModal @ticketCreated="onTicketCreated" />
+    <FiltersBar
+      :systems="systems"
+      :operators="operators"
+      :statuses="statuses"
+      @filter-change="onFilterChange"
+    />
     <table class="table">
       <thead>
         <tr>
@@ -62,18 +74,58 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watchEffect } from 'vue'
 import apiService from '@/apiService'
+
+import CreateTicketModal from '@/components/CreateTicketModal.vue'
+import FiltersBar from '@/components/FiltersBar.vue'
+
+
+const systems = ref([]) // Инициализация массива систем
+const operators = ref([])
+const statuses = ref([]) // Инициализация массива операторов
+
 
 const tickets = ref([])
 
 onMounted(async () => {
+  // Загрузка систем и операторов для фильтров
+  const systemsResponse = await apiService.getSystems()
+  systems.value = systemsResponse.data
+  const operatorsResponse = await apiService.getOperators()
+  operators.value = operatorsResponse.data
+  const statusesResponse = await apiService.getStatuses()
+  statuses.value = statusesResponse.data
+
+  // Загрузка тикетов с начальными фильтрами
+  fetchTickets()
+})
+
+const fetchTickets = async (filters) => {
   try {
-    const response = await apiService.getTickets()
-    response.data.sort((a, b) => b.id - a.id);
+    const response = await apiService.getTickets(filters)
     tickets.value = response.data
   } catch (error) {
-    // Обработка ошибок, например, отображение сообщения об ошибке
+    console.error('Ошибка при загрузке тикетов:', error)
   }
+}
+
+const onFilterChange = (filters) => {
+  // Удаляем пустые значения из объекта фильтров перед передачей в fetchTickets
+  Object.keys(filters).forEach(key => filters[key] === '' && delete filters[key]);
+  fetchTickets(filters)
+}
+
+// Слушаем событие 'ticketCreated' для обновления списка тикетов
+const onTicketCreated = () => {
+  fetchTickets()
+}
+
+// Используем watchEffect для автоматического обновления списка тикетов при изменении tickets
+watchEffect(() => {
+  fetchTickets()
 })
+
+// Экспортируем onTicketCreated, чтобы его можно было использовать в шаблоне или других компонентах
+const emit = defineEmits(['ticketCreated', 'filter-change'])
 </script>

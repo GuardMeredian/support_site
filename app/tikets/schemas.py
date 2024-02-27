@@ -45,12 +45,13 @@ class SCreateTicket(BaseModel):
     title: str
     description: str
     status_id: int
+    system_id: int
     priority: Optional[int] = None
     creator_id: int
     created_at: Optional[date] = None
-    updated_at: Optional[date] = None
+    #updated_at: Optional[date] = None
     organization_id: int
-    attachments: List[SAttachment] = []
+    #attachments: List[SAttachment] = []
 
     class Config:
         from_attributes=True
@@ -67,6 +68,12 @@ class SUpdateTicket(BaseModel):
 
 class SUpdateTicketStatus(BaseModel):
     status_id: int
+
+    class Config:
+        from_attributes = True
+
+class SUpdateTicketOperator(BaseModel):
+    assigned_id: int
 
     class Config:
         from_attributes = True

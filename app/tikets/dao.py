@@ -139,4 +139,22 @@ class TicketDAO(BaseDAO[Ticket]):
             ticket.status_id = status_id
             # Сохраняем изменения в базе данных
             await session.commit()
-        return ticket    
+        return ticket
+
+    @staticmethod
+    async def update_ticket_operator(ticket_id: int, assigned_id: int):
+        async with async_session_maker() as session:
+            # Создаем запрос для выбора тикета с указанным ID
+            stmt = select(Ticket).where(Ticket.id == ticket_id)
+            # Выполняем запрос
+            result = await session.execute(stmt)
+            ticket = result.scalars().first()
+
+            if not ticket:
+                # Тикет не найден
+                return None
+            # Обновляем статус тикета
+            ticket.assigned_id = assigned_id
+            # Сохраняем изменения в базе данных
+            await session.commit()
+        return ticket        

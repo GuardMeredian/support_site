@@ -15,13 +15,15 @@ class UserDAO(BaseDAO[User]):
     async def find_by_id_user(cls, model_id: int):
         async with async_session_maker() as session:
             # Запрос для получения пользователя с определенными полями и связанной ролью
-            user_query = select(cls.model).options(joinedload(cls.model.role)).filter_by(id=model_id)
+            user_query = select(cls.model).options(joinedload(cls.model.role),
+                                                   joinedload(cls.model.organization)).filter_by(id=model_id)
             user_result = await session.execute(user_query)
             user = user_result.scalars().first()
 
 
             # Получаем роль пользователя
             role = user.role
+            organization = user.organization
 
         # Создаем новый словарь с полями пользователя и ролью
         user_with_role = {
@@ -29,6 +31,11 @@ class UserDAO(BaseDAO[User]):
             'surname': user.surname,
             'name': user.name,
             'secname': user.secname,
+            'contact_tel': user.contact_tel,
+            'organization':{
+                'id': organization.id,
+                'lpucode': organization.lpucode
+            },
             'role':{
                 'id': role.id,
                 'description':role.description
