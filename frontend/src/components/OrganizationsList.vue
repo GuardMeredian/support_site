@@ -42,7 +42,7 @@
    
    // Сортировка организаций по возрастанию поля Lpucode
    const sortedOrganizations = computed(() => {
-    return organizations.value.sort((a, b) => a.lpucode - b.lpucode);
+ return [...organizations.value].sort((a, b) => a.lpucode - b.lpucode);
    });
    </script>
    
