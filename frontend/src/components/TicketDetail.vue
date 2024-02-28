@@ -19,7 +19,7 @@
           <tr>
             <th scope="row">Статус</th>
             <td>
-              <select v-model="selectedStatus" @change="updateStatus">
+              <select v-model="selectedStatus" class="form-control" @change="updateStatus">
                 <option v-for="status in statuses" :key="status.id" :value="status.id">
                 {{ status.description }}
                 </option>
@@ -33,7 +33,7 @@
           <tr>
             <th scope="row">Оператор</th>
               <td>
-                <select v-model="selectedOperator" @change="updateOperator">
+                <select v-model="selectedOperator" class="form-control" @change="updateOperator">
                   <option v-for="operator in operators" :key="operator.id" :value="operator.id">
                     {{ operator.surname }} {{ operator.name }} {{ operator.secname }}
                   </option>

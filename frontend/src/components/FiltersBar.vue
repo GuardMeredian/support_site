@@ -1,64 +1,114 @@
-<!-- FiltersBar.vue -->
 <template>
     <div class="filters">
-      <label for="organizationFilter">Код организации:</label>
-      <input type="text" id="organizationFilter" v-model="organizationFilter" @input="emitFilterChange" />
-  
-      <label for="systemFilter">Система:</label>
-      <select id="systemFilter" v-model="systemFilter" @change="emitFilterChange">
-        <option value="">Все</option>
-        <option v-for="system in systems" :key="system.id" :value="system.id">
-          {{ system.description }}
-        </option>
-      </select>
-  
-      <label for="statusFilter">Статус:</label>
-      <select id="statusFilter" v-model="statusFilter" @change="emitFilterChange">
-        <option value="">Все</option>
-        <option v-for="status in statuses" :key="status.id" :value="status.id">
-          {{ status.description }}
-        </option>
-      </select>
-  
-      <label for="operatorFilter">Оператор:</label>
-      <select id="operatorFilter" v-model="operatorFilter" @change="emitFilterChange">
-        <option value="">Все</option>
-        <option v-for="operator in operators" :key="operator.id" :value="operator.id">
-          {{ operator.surname }} {{ operator.name }} {{ operator.secname }}
-        </option>
-      </select>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref, defineProps, defineEmits  } from 'vue'
-  
-  const organizationFilter = ref('')
-  const systemFilter = ref('')
-  const statusFilter = ref('')
-  const operatorFilter = ref('')
-  
 
-  const props = defineProps({
-  systems: Array,
-  operators: Array,
-  statuses: Array
+       <div class="row">
+        <div class="col-md-4">
+           <div class="form-group">
+             <label for="ticketIdFilter">Номер заявки:</label>
+             <input id="ticketIdFilter" class="form-control" v-model="ticketIdFilter" @change="emitFilterChange">
+           </div>
+         </div>
+
+         <div class="col-md-4">
+           <div class="form-group">
+             <label for="organizationFilter">Организации:</label>
+             <select id="organizationFilter" class="form-control" v-model="organizationFilter" @change="emitFilterChange">
+               <option value="">Все</option>
+               <option v-for="organization in organizations" :key="organization.id" :value="organization.id">
+                 {{ organization.name }}
+               </option>
+             </select>
+           </div>
+         </div>
+   
+         <div class="col-md-4">
+           <div class="form-group">
+             <label for="systemFilter">Система:</label>
+             <select id="systemFilter" class="form-control" v-model="systemFilter" @change="emitFilterChange">
+               <option value="">Все</option>
+               <option v-for="system in systems" :key="system.id" :value="system.id">
+                 {{ system.description }}
+               </option>
+             </select>
+           </div>
+         </div>
+       </div>
+   
+       <div class="row">
+         <div class="col-md-6">
+           <div class="form-group">
+             <label for="statusFilter">Статус:</label>
+             <select id="statusFilter" class="form-control" v-model="statusFilter" @change="emitFilterChange">
+               <option value="">Все</option>
+               <option v-for="status in statuses" :key="status.id" :value="status.id">
+                 {{ status.description }}
+               </option>
+             </select>
+           </div>
+         </div>
+   
+         <div class="col-md-6">
+           <div class="form-group">
+             <label for="assignedFilter">Оператор:</label>
+             <select id="assignedFilter" class="form-control" v-model="assignedFilter" @change="emitFilterChange">
+               <option value="">Все</option>
+               <option v-for="operator in operators" :key="operator.id" :value="operator.id">
+                 {{ operator.surname }} {{ operator.name }} {{ operator.secname }}
+               </option>
+             </select>
+           </div>
+         </div>
+       </div>
+       <br>
+       <div class="row">
+       <div class="col-md-12">
+        <button class="btn btn-secondary" @click="resetFilters">Сбросить фильтры</button>
+      </div>
+    </div>
+    </div>
+</template>
+  
+<script setup>
+import { ref, watch, defineProps, defineEmits } from 'vue'
+
+const ticketIdFilter = ref('')
+const organizationFilter = ref('')
+const systemFilter = ref('')
+const statusFilter = ref('')
+const assignedFilter = ref('')
+
+const props = defineProps({
+ organizations: Array,
+ systems: Array,
+ operators: Array,
+ statuses: Array
 })
+
 const emit = defineEmits(['filter-change'])
 
-const emitFilterChange = () => {
-  // Создаем объект фильтров, исключая пустые значения
-  const filters = {
-    organization: organizationFilter.value || undefined,
-    system: systemFilter.value || undefined,
-    status: statusFilter.value || undefined,
-    operator: operatorFilter.value || undefined
-  };
+watch([ticketIdFilter, organizationFilter, systemFilter, statusFilter, assignedFilter], () => {
+ const filters = {
+    ticket_id: ticketIdFilter.value || '',
+    organization: organizationFilter.value || '',
+    system: systemFilter.value || '',
+    status: statusFilter.value || '',
+    assigned: assignedFilter.value || ''
+ }
 
-  // Удаляем пустые значения из объекта фильтров
-  Object.keys(filters).forEach(key => filters[key] === '' && delete filters[key]);
+ // Фильтрация пустых фильтров
+ const filteredFilters = Object.fromEntries(
+    Object.entries(filters).filter(([key, value]) => value !== '')
+ )
 
-  emit('filter-change', filters)
+ emit('filter-change', filteredFilters)
+}, { deep: true })
+
+const resetFilters = () => {
+    ticketIdFilter.value = ''
+ organizationFilter.value = ''
+ systemFilter.value = ''
+ statusFilter.value = ''
+ assignedFilter.value = ''
+ emit('filter-change', {})
 }
-  
-  </script>
+</script>

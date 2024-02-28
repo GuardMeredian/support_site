@@ -14,9 +14,14 @@ export default {
     return apiClient.post('/auth/logout')
   },
   getTickets(filters = {}) {
-    const params = new URLSearchParams(filters).toString();
-  return apiClient.get(`/tickets/all_tickets?${params}`);
-  },
+    const params = new URLSearchParams();
+    Object.keys(filters).forEach(key => {
+      if (filters[key]) {
+        params.append(key, filters[key]);
+      }
+    });
+    return apiClient.get(`/tickets/all_tickets?${params.toString()}`);
+ },
   getTicketDetail(ticketId) {
     return apiClient.get(`/tickets/${ticketId}`)
   },
@@ -49,5 +54,14 @@ export default {
   updateTicketOperator(ticketId, operator_id) {
     return apiClient.put(`/tickets/${ticketId}/operator`, { assigned_id: operator_id });
   },
+  getOrgs() {
+    return apiClient.get('/med_org/med_orgs/')
+  },
+  getNews() {
+    return apiClient.get('/news/news')
+  },
+  getOrgDetail(orgid) {
+    return apiClient.get(`/med_org/${orgid}`)
+  }
   // Добавьте другие методы для взаимодействия с API по мере необходимости
 }

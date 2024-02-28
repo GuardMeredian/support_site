@@ -7,18 +7,22 @@
     </button>
     <hr>
     <CreateTicketModal @ticketCreated="onTicketCreated" />
+    <h4>Фильтры</h4>
     <FiltersBar
+      :ticket_id="ticket_id"
       :systems="systems"
       :operators="operators"
       :statuses="statuses"
+      :organizations="organizations"
       @filter-change="onFilterChange"
     />
-    <table class="table">
+    <hr>
+    <table class="table table-hover">
       <thead>
         <tr>
           <th scope="col">#</th>
           <th scope="col">Код организации</th>
-          <th scope="col">Заголовок</th>
+          <th scope="col">Тема</th>
           <th scope="col">Система</th>
           <th scope="col">Статус</th>
           <th scope="col">Оператор</th>
@@ -32,13 +36,15 @@
             <th scope="row">{{ ticket.id }}</th>
             <td>{{ ticket.organization.lpucode }}</td>
             <td>
-              <RouterLink :to="`/tickets/${ticket.id}`">{{ ticket.title }}</RouterLink>
+              <RouterLink class="no-highlight" :to="`/tickets/${ticket.id}`">
+                <strong>{{ ticket.title }}</strong>
+              </RouterLink>
             </td>
             <td>{{ ticket.system.description }}</td>
             <td>{{ ticket.status.description }}</td>
             <td>
               <span v-if="ticket.assigned">{{ ticket.assigned.surname }}</span>
-              <span v-else>Не назначен</span>
+              <span v-else><i>Регистрируется</i></span>
             </td>
             <td>{{ ticket.creator.surname }}</td>
             <td>{{ ticket.created_at }}</td>
@@ -47,7 +53,7 @@
             <th scope="row">{{ ticket.id }}</th>
             <td>{{ ticket.organization.lpucode }}</td>
             <td>
-              <RouterLink :to="`/tickets/${ticket.id}`">{{ ticket.title }}</RouterLink>
+              <RouterLink class="no-highlight" :to="`/tickets/${ticket.id}`"><strong>{{ ticket.title }}</strong></RouterLink>
             </td>
             <td>{{ ticket.system.description }}</td>
             <td>{{ ticket.status.description }}</td>
@@ -59,11 +65,11 @@
             <th scope="row">{{ ticket.id }}</th>
             <td>{{ ticket.organization.lpucode }}</td>
             <td>
-              <RouterLink :to="`/tickets/${ticket.id}`">{{ ticket.title }}</RouterLink>
+              <RouterLink class="no-highlight" :to="`/tickets/${ticket.id}`"><strong>{{ ticket.title }}</strong></RouterLink>
             </td>
             <td>{{ ticket.system.description }}</td>
             <td>{{ ticket.status.description }}</td>
-            <td>Не назначен</td>
+            <td><i>Регистрируется</i></td>
             <td>{{ ticket.creator.surname }}</td>
             <td>{{ ticket.created_at }}</td>
           </tr>
@@ -73,59 +79,55 @@
   </div>
 </template>
 
+<style scoped>
+.no-highlight {
+ text-decoration: none;
+ color: inherit;
+}
+</style>
+
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue'
+import { ref, onMounted } from 'vue'
 import apiService from '@/apiService'
 
 import CreateTicketModal from '@/components/CreateTicketModal.vue'
 import FiltersBar from '@/components/FiltersBar.vue'
 
-
-const systems = ref([]) // Инициализация массива систем
+const ticket_id = ref(null)
+const systems = ref([])
 const operators = ref([])
-const statuses = ref([]) // Инициализация массива операторов
-
+const statuses = ref([])
+const organizations = ref([]) 
 
 const tickets = ref([])
 
 onMounted(async () => {
-  // Загрузка систем и операторов для фильтров
-  const systemsResponse = await apiService.getSystems()
-  systems.value = systemsResponse.data
-  const operatorsResponse = await apiService.getOperators()
-  operators.value = operatorsResponse.data
-  const statusesResponse = await apiService.getStatuses()
-  statuses.value = statusesResponse.data
+ // Загрузка систем и статусов для фильтров
+ const systemsResponse = await apiService.getSystems()
+ systems.value = systemsResponse.data
+ const operatorsResponse = await apiService.getOperators()
+ operators.value = operatorsResponse.data
+ const statusesResponse = await apiService.getStatuses()
+ statuses.value = statusesResponse.data
+ const organizationsResponse = await apiService.getOrgs()
+ organizations.value = organizationsResponse.data
+ console.log(organizations.value)
 
-  // Загрузка тикетов с начальными фильтрами
-  fetchTickets()
+ // Загрузка тикетов с начальными фильтрами
+ fetchTickets()
 })
 
-const fetchTickets = async (filters) => {
-  try {
-    const response = await apiService.getTickets(filters)
-    tickets.value = response.data
-  } catch (error) {
-    console.error('Ошибка при загрузке тикетов:', error)
-  }
+const fetchTickets = async (filters = {}) => {
+ const response = await apiService.getTickets(filters);
+ tickets.value = response.data.sort((a, b) => b.id - a.id);
 }
 
 const onFilterChange = (filters) => {
-  // Удаляем пустые значения из объекта фильтров перед передачей в fetchTickets
-  Object.keys(filters).forEach(key => filters[key] === '' && delete filters[key]);
-  fetchTickets(filters)
+ fetchTickets(filters)
 }
 
 // Слушаем событие 'ticketCreated' для обновления списка тикетов
 const onTicketCreated = () => {
-  fetchTickets()
+ fetchTickets()
 }
-
-// Используем watchEffect для автоматического обновления списка тикетов при изменении tickets
-watchEffect(() => {
-  fetchTickets()
-})
-
-// Экспортируем onTicketCreated, чтобы его можно было использовать в шаблоне или других компонентах
-const emit = defineEmits(['ticketCreated', 'filter-change'])
 </script>

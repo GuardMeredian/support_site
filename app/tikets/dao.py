@@ -98,7 +98,22 @@ class TicketDAO(BaseDAO[Ticket]):
                 joinedload(cls.model.creator),
                 joinedload(cls.model.organization),
                 joinedload(cls.model.assigned)
-            ).filter_by(**filter_by)
+            )
+        if filter_by:
+            if 'system' in filter_by and filter_by['system']:
+                query = query.filter(cls.model.system_id == filter_by['system'])
+            if 'status' in filter_by and filter_by['status']:
+                query = query.filter(cls.model.status_id == filter_by['status'])
+            if 'assigned' in filter_by and filter_by['assigned']:
+                query = query.filter(cls.model.assigned_id == filter_by['assigned'])
+            if 'organization' in filter_by and filter_by['organization']:
+                query = query.filter(cls.model.organization_id == filter_by['organization'])
+            if 'ticket_id' in filter_by and filter_by['ticket_id']: # Добавлен фильтрация по номеру заявки
+                query = query.filter(cls.model.id == filter_by['ticket_id'])
+        # Если фильтры не предоставлены, возвращаем все заявки
+        else:
+            query = query.filter(True)
+
         result = await session.execute(query)
          # Извлекаем все строки из результата запроса
         tickets = result.scalars().all()

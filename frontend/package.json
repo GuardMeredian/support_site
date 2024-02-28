@@ -14,7 +14,8 @@
     "axios": "^1.6.7",
     "bootstrap": "^5.3.3",
     "vue": "^3.4.15",
-    "vue-router": "^4.0.13"
+    "vue-router": "^4.0.13",
+    "vue-select-next": "^0.1.6"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.3",
