@@ -15,7 +15,7 @@
         </div>
         <hr>
         <div class="d-flex justify-content-center mt-3">
-          <button class="btn btn-primary py-2 col-md-5" type="submit">Войти</button>
+          <button class="btn btn-primary py-2 col-md-5" @click="handleLogin">Войти</button>
         </div>
         <p class="mt-5 mb-3 text-body-secondary">© ГБУЗ СО МИАЦ 2024</p>
       </form>
@@ -27,6 +27,7 @@
 import { ref} from 'vue'
 import apiService from '../apiService'
 import { useRouter } from 'vue-router'
+import { login } from '@/utils/authHelper';
 
 const credentials = ref({
   login: '',
@@ -35,21 +36,9 @@ const credentials = ref({
 
 const router = useRouter()
 
-
-const login = async () => {
-  try {
-    const response = await apiService.login(credentials.value)
-    // Проверяем статус ответа
-    if (response.status === 200) {
-      // Перенаправляем пользователя на страницу тикетов
-      router.push({ name: 'tickets' })
-    } else {
-      // Обработка ошибок, например, отображение сообщения об ошибке
-    }
-  } catch (error) {
-    // Обработка ошибок, например, отображение сообщения об ошибке
-  }
-}
+const handleLogin = async () => {
+ await login(router);
+};
 
 
 </script>

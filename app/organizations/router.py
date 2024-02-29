@@ -18,7 +18,7 @@ async def get_all_orgs(current_user: dict = Depends(get_current_user)) -> List[O
         raise UserNotAuthException
     
     user = current_user["User"]
-    if user['role']['id'] == 3:
+    if user['role']['id'] == 2:
         raise UserIncorrectRoleException
     orgs = await OrganizationDAO.find_all()
     return orgs

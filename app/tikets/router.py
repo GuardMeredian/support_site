@@ -8,7 +8,7 @@ from app.exceptions import MessageIsNotAddException, TicketIsNotAddException, Ti
 from app.tikets.messages.schemas import SMessage
 from app.tikets.dao import TicketDAO
 from app.tikets.models import Ticket
-from app.tikets.schemas import STicketSummury, SDetailTicket, SCreateTicket, SUpdateTicket, SUpdateTicketOperator, SUpdateTicketStatus
+from app.tikets.schemas import STicketSummury, SDetailTicket, SCreateTicket, SUpdateTicketOperator, SUpdateTicketStatus
 from typing import Annotated, Dict, List, Optional
 from app.database import async_session_maker
 from app.users.dependescies import get_current_user
@@ -22,22 +22,24 @@ router = APIRouter(
 
 @router.get("/all_tickets", response_model=List[STicketSummury])
 async def get_all_tickets(current_user: dict = Depends(get_current_user),
-                          system: Optional[int] = None,
-                          status: Optional[int] = None,
-                          organization: Optional[int] = None,
-                          assigned: Optional[int] = None,
-                          ticket_id: Optional[int] = None) -> List[Ticket]:
+                      system: Optional[int] = None,
+                      status: Optional[int] = None,
+                      organization: Optional[int] = None,
+                      assigned: Optional[int] = None,
+                      ticket_id: Optional[int] = None) -> List[Ticket]:
     user = current_user['User']
-    if user['role']['id'] == 3:
-        tickets = await TicketDAO.find_all_summary(organization_id=user.organization_id)
+    if user['role']['id'] == 2:
+        organization_id = user['organization']['id']
+        tickets = await TicketDAO.find_all_summary(organization_id=organization_id)
     else:    
-        tickets = await TicketDAO.find_all_summary(system=system,
-                                                   status=status,
-                                                   organization=organization,
-                                                   assigned=assigned,
-                                                   ticket_id=ticket_id)
-    if not any([ticket_id, system, status, organization, assigned]):
-        tickets = await TicketDAO.find_all_summary()
+        if not any([ticket_id, system, status, organization, assigned]):
+            tickets = await TicketDAO.find_all_summary()
+        else:
+            tickets = await TicketDAO.find_all_summary(system=system,
+                                             status=status,
+                                             organization=organization,
+                                             assigned=assigned,
+                                             ticket_id=ticket_id)
     return tickets
 
 @router.get("/{ticket_id}", response_model=SDetailTicket)
@@ -47,21 +49,6 @@ async def get_detail_ticket(ticket_id: int) -> Ticket:
         raise TicketIsNotFoundException
     return ticket
 
-@router.put("/{ticket_id}", response_model=SUpdateTicket)
-async def update_ticket(ticket_id: int, ticket_data: SDetailTicket, current_user: dict = Depends(get_current_user)):
-    if not current_user:
-        raise UserNotAuthException
-    # Проверяем, существует ли тикет с указанным ID
-    ticket = await TicketDAO.find_one_or_none(id=ticket_id)
-    if not ticket:
-        raise TicketIsNotFoundException
-
-    # Обновляем тикет в базе данных
-    updated_ticket = await TicketDAO.update_ticket(ticket_id, ticket_data)
-    if not updated_ticket:
-        raise TicketIsNotUpdateException
-
-    return updated_ticket
 
 @router.post("/add_ticket", response_model=SCreateTicket)
 async def create_ticket(ticket_data: SCreateTicket, current_user: dict = Depends(get_current_user)):

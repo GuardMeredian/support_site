@@ -1,6 +1,6 @@
 <template>
+    <h4>Фильтры</h4>
     <div class="filters">
-
        <div class="row">
         <div class="col-md-4">
            <div class="form-group">
@@ -81,7 +81,8 @@ const props = defineProps({
  organizations: Array,
  systems: Array,
  operators: Array,
- statuses: Array
+ statuses: Array,
+ ticket_id: Number,
 })
 
 const emit = defineEmits(['filter-change'])

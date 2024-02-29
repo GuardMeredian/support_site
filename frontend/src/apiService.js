@@ -25,9 +25,15 @@ export default {
   getTicketDetail(ticketId) {
     return apiClient.get(`/tickets/${ticketId}`)
   },
-  getStatuses() {
-    return apiClient.get('/statuses/')
-  },
+  getStatuses(roleId) {
+    // Проверяем, не является ли текущий пользователь пользователем с role_id = 2
+    if (roleId !== 2) {
+       return apiClient.get('/statuses/');
+    } else {
+       // Если пользователь имеет role_id = 2, возвращаем Promise, который не выполняется
+       return Promise.resolve({ data: [] });
+    }
+   },
   updateTicketStatus(ticketId, statusId) {
     return apiClient.put(`/tickets/${ticketId}/status`, { status_id: statusId });
   },
@@ -48,20 +54,35 @@ export default {
   createTicket(ticketData) {
     return apiClient.post(`/tickets/add_ticket`, ticketData);
   },
-  getOperators() {
-    return apiClient.get('auth/users/')
+  getOperators(roleId) {
+    // Проверяем, не является ли текущий пользователь пользователем с role_id = 2
+    if (roleId !== 2) {
+       return apiClient.get('auth/users/');
+    } else {
+       // Если пользователь имеет role_id = 2, возвращаем Promise, который не выполняется
+       return Promise.resolve({ data: [] });
+    }
   },
   updateTicketOperator(ticketId, operator_id) {
     return apiClient.put(`/tickets/${ticketId}/operator`, { assigned_id: operator_id });
   },
-  getOrgs() {
-    return apiClient.get('/med_org/med_orgs/')
-  },
+  getOrgs(roleId) {
+    // Проверяем, не является ли текущий пользователь пользователем с role_id = 2
+    if (roleId !== 2) {
+       return apiClient.get('/med_org/med_orgs/');
+    } else {
+       // Если пользователь имеет role_id = 2, возвращаем Promise, который не выполняется
+       return Promise.resolve({ data: [] });
+    }
+   },
   getNews() {
     return apiClient.get('/news/news')
   },
   getOrgDetail(orgid) {
     return apiClient.get(`/med_org/${orgid}`)
-  }
+  },
+  uploadFile(ticketId, formData) {
+    return apiClient.post(`/tickets/upload_file/${ticketId}`, formData);
+   },
   // Добавьте другие методы для взаимодействия с API по мере необходимости
 }

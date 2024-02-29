@@ -19,7 +19,7 @@ async def get_all_status(current_user: dict = Depends(get_current_user)) -> List
         raise UserNotAuthException
     
     user = current_user["User"]
-    if user['role']['id'] == 3:
+    if user['role']['id'] == 2:
         raise UserIncorrectRoleException
     statuses = await StatusDAO.find_all()
     return statuses

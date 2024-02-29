@@ -7,8 +7,8 @@
     </button>
     <hr>
     <CreateTicketModal @ticketCreated="onTicketCreated" />
-    <h4>Фильтры</h4>
     <FiltersBar
+    v-if="currentUser?.role?.id !== 2"
       :ticket_id="ticket_id"
       :systems="systems"
       :operators="operators"
@@ -101,20 +101,35 @@ const organizations = ref([])
 
 const tickets = ref([])
 
+const currentUser = ref({});
+const currentUserRoleId = ref('')
+
+
 onMounted(async () => {
+  const userResponse = await apiService.getUserData();
+ const currentUserData = userResponse.data.User;
+ currentUser.value = currentUserData; // Обновите currentUser с полученными данными
+ currentUserRoleId.value = currentUserData.role.id; // Обновите currentUserRoleId с ролью пользователя
+
  // Загрузка систем и статусов для фильтров
- const systemsResponse = await apiService.getSystems()
- systems.value = systemsResponse.data
- const operatorsResponse = await apiService.getOperators()
- operators.value = operatorsResponse.data
- const statusesResponse = await apiService.getStatuses()
- statuses.value = statusesResponse.data
- const organizationsResponse = await apiService.getOrgs()
- organizations.value = organizationsResponse.data
- console.log(organizations.value)
+ const systemsResponse = await apiService.getSystems();
+ systems.value = systemsResponse.data;
+
+ if (currentUserRoleId.value !== 2) {
+    const operatorsResponse = await apiService.getOperators(currentUserRoleId);
+    operators.value = operatorsResponse.data;
+    const statusesResponse = await apiService.getStatuses(currentUserRoleId);
+    statuses.value = statusesResponse.data;
+    const organizationsResponse = await apiService.getOrgs(currentUserRoleId);
+    organizations.value = organizationsResponse.data;
+ }
 
  // Загрузка тикетов с начальными фильтрами
- fetchTickets()
+ let filters = {};
+ if (currentUserRoleId.value === 2) {
+    filters = { organization: currentUserData.organization.id };
+ }
+ fetchTickets(filters);
 })
 
 const fetchTickets = async (filters = {}) => {
@@ -123,11 +138,11 @@ const fetchTickets = async (filters = {}) => {
 }
 
 const onFilterChange = (filters) => {
- fetchTickets(filters)
+ fetchTickets(filters);
 }
 
 // Слушаем событие 'ticketCreated' для обновления списка тикетов
 const onTicketCreated = () => {
- fetchTickets()
+ fetchTickets();
 }
 </script>

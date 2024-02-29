@@ -5,7 +5,7 @@
        <div v-if="organization">
          <h3>{{ organization.name }}</h3>
          <h3>Код организации: {{ organization.lpucode }}</h3>
-         <h4>Список пользователей:</h4>
+         <h4>Список сотрудников:</h4>
          <table class="table">
            <thead>
              <tr>

@@ -17,30 +17,32 @@
             <td>{{ ticket.system.description }}</td>
           </tr>
           <tr>
-            <th scope="row">Статус</th>
-            <td>
-              <select v-model="selectedStatus" class="form-control" @change="updateStatus">
-                <option v-for="status in statuses" :key="status.id" :value="status.id">
-                {{ status.description }}
-                </option>
-              </select>
-            </td>
-          </tr>
+    <th scope="row">Статус</th>
+    <td>
+      <span v-if="currentUserRoleId === 2">{{ ticket.status.description }}</span>
+      <select v-else v-model="selectedStatus" class="form-control" @change="updateStatus">
+        <option v-for="status in statuses" :key="status.id" :value="status.id">
+          {{ status.description }}
+        </option>
+      </select>
+    </td>
+ </tr>
           <tr>
             <th scope="row">Создал</th>
             <td>{{ ticket.creator.surname }}</td>
           </tr>
           <tr>
-            <th scope="row">Оператор</th>
-              <td>
-                <select v-model="selectedOperator" class="form-control" @change="updateOperator">
-                  <option v-for="operator in operators" :key="operator.id" :value="operator.id">
-                    {{ operator.surname }} {{ operator.name }} {{ operator.secname }}
-                  </option>
-                  <option v-if="!selectedOperator" value="">Не назначен</option>
-                </select>
-              </td>
-          </tr>
+    <th scope="row">Оператор</th>
+    <td>
+      <span v-if="currentUserRoleId === 2">{{ ticket.assigned ? ticket.assigned.surname : 'Не назначен' }}</span>
+      <select v-else v-model="selectedOperator" class="form-control" @change="updateOperator">
+        <option v-for="operator in operators" :key="operator.id" :value="operator.id">
+          {{ operator.surname }} {{ operator.name }} {{ operator.secname }}
+        </option>
+        <option v-if="!selectedOperator" value="">Не назначен</option>
+      </select>
+    </td>
+ </tr>
           <tr>
             <th scope="row">Дата создания</th>
             <td>{{ ticket.created_at }}</td>
@@ -52,12 +54,15 @@
       <h4>Сообщения:</h4>
       <ul>
         <li v-for="message in ticket.messages" :key="message.id" class="alert alert-info">
-          <strong>{{ message.creator.surname }} ({{ message.created_at }}):</strong> {{ message.content }}
+          <strong>{{ message.creator.surname }} ({{ message.created_at.split('T')[0] }}):</strong> {{ message.content }}
         </li>
       </ul>
-      <h4>Вложения:</h4>
+      <h4>Вложения:<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+      Загрузить файл
+    </button></h4>
+    <UploadModal @refresh-ticket-data="handleRefreshTicketData" />
       <ul>
-        <li v-for="attachment in ticket.attachments" :key="attachment.id">
+        <li v-for="attachment in ticket.attachments" :key="attachment.id" class="alert alert-secondary">
           <a :href="attachment.file_url">{{ attachment.filename }}</a>
         </li>
       </ul>
@@ -79,20 +84,43 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import apiService from '@/apiService'
+import UploadModal from '@/components/UploadModal.vue';
 
 const route = useRoute()
 const ticket = ref(null)
 const statuses = ref([])
-const selectedStatus = ref(null) // Инициализируем selectedStatus как null
+const selectedStatus = ref(null)
 const newMessage = ref('')
-const operators = ref([]) // Инициализация массива операторов
-const selectedOperator = ref(null) // Инициализация выбранного оператора
+const operators = ref([])
+const selectedOperator = ref('')
 
-onMounted(async () => {
-  try {
+const currentUserRoleId = ref(null);
+
+// Определение функции refreshTicketData
+const refreshTicketData = async () => {
+ try {
     const response = await apiService.getTicketDetail(route.params.ticketId);
     ticket.value = response.data;
-    const statusesResponse = await apiService.getStatuses();
+ } catch (error) {
+    console.error('Ошибка при обновлении данных о заявке:', error);
+ }
+};
+
+const handleRefreshTicketData = () => {
+ refreshTicketData();
+};
+
+
+onMounted(async () => {
+ try {
+  const userResponse = await apiService.getUserData();
+ const currentUser = userResponse.data.User;
+  currentUserRoleId.value = currentUser.role.id;
+ console.log(currentUserRoleId)
+    const response = await apiService.getTicketDetail(route.params.ticketId);
+    ticket.value = response.data;
+    if (currentUserRoleId.value !== 2) {
+      const statusesResponse = await apiService.getStatuses();
     statuses.value = statusesResponse.data;
     if (ticket.value && ticket.value.status && ticket.value.status.id) {
       selectedStatus.value = ticket.value.status.id;
@@ -102,9 +130,10 @@ onMounted(async () => {
     if (ticket.value && ticket.value.assigned) {
       selectedOperator.value = ticket.value.assigned.id; // Устанавливаем selectedOperator в id назначенного оператора
     }
-  } catch (error) {
+    }
+ } catch (error) {
     console.error('Ошибка при загрузке деталей тикета:', error);
-  }
+ }
 });
 
 const updateStatus = async () => {
@@ -167,4 +196,6 @@ const addMessage = async () => {
     console.error('Ошибка при добавлении сообщения:', error);
   }
 };
+// Убедитесь, что handleRefreshTicketData возвращается из setup
+
 </script>
