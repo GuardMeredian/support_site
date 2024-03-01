@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="alert alert-info col-md-3" role="alert">
       <form @submit.prevent="login" class="form-group">
-        <h1 class="h3 mb-3 fw-normal">Авторизация</h1>
+        <h1 class="h3 mb-3 fw-normal text-center">Авторизация</h1>
 
         <div class="form-floating">
           <input
@@ -39,7 +39,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import apiService from '../apiService'
+import apiService from '@/apiService'
 import { useRouter } from 'vue-router'
 import { updateUser, user } from '@/utils/authHelper'
 
@@ -54,11 +54,11 @@ const login = async () => {
   try {
     const response = await apiService.login(credentials.value)
     console.log('Login response:', response) // Добавьте логи для отладки
-    const userDataResponse = await apiService.getUserData();
-      if (userDataResponse.status === 200) {
-        updateUser(userDataResponse.data);
-        console.log('User updated:', user.value); // Обновляем объект user с полными данными пользователя
-        router.push({ name: 'tickets' });
+    const userDataResponse = await apiService.getUserData()
+    if (userDataResponse.status === 200) {
+      updateUser(userDataResponse.data)
+      console.log('User updated:', user.value) // Обновляем объект user с полными данными пользователя
+      router.push({ name: 'tickets' })
     } else {
       console.error('Login failed:', response) // Добавьте логи для отладки
       // Обработка ошибок

@@ -82,7 +82,9 @@
           :key="attachment.id"
           class="alert alert-secondary"
         >
-        <a :href="attachment.file_url" :download="attachment.filename">{{ attachment.filename }}</a>
+          <a :href="attachment.file_url" :download="attachment.filename">{{
+            attachment.filename
+          }}</a>
         </li>
       </ul>
       <h4>Добавить сообщение:</h4>

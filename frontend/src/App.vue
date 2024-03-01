@@ -11,7 +11,7 @@ const logout = async () => {
   try {
     await apiService.logout()
     router.push('/login')
-    isAuthenticated.value = false; // Перенаправление на страницу входа после успешного выхода
+    isAuthenticated.value = false // Перенаправление на страницу входа после успешного выхода
     user.value = {}
   } catch (error) {
     console.error('Ошибка при выходе из системы:', error)
@@ -55,10 +55,21 @@ const goToOrgDetail = () => {
                 >Заявки</RouterLink
               >
             </li>
-            <li class="nav-item" style="margin-right: 10px;">
-    <RouterLink v-if="isAuthenticated && user.User.role.id !==2" class="btn btn-outline-success" to="/orgs">Организации</RouterLink>
-    <button v-else-if="isAuthenticated  && user.User.role.id ==2" class="btn btn-outline-success" @click="goToOrgDetail">Организация</button>
-</li>
+            <li class="nav-item" style="margin-right: 10px">
+              <RouterLink
+                v-if="isAuthenticated && user.User.role.id !== 2"
+                class="btn btn-outline-success"
+                to="/orgs"
+                >Организации</RouterLink
+              >
+              <button
+                v-else-if="isAuthenticated && user.User.role.id == 2"
+                class="btn btn-outline-success"
+                @click="goToOrgDetail"
+              >
+                Организация
+              </button>
+            </li>
             <li class="nav-item" style="margin-right: 10px">
               <RouterLink v-if="isAuthenticated" class="btn btn-outline-success" to="/news"
                 >Новости</RouterLink
@@ -69,7 +80,13 @@ const goToOrgDetail = () => {
             <!-- Добавьте ms-auto к ul, чтобы выровнять элементы по правому краю в Bootstrap 5 -->
             <li class="nav-item">
               <label class="nav-link" v-if="isAuthenticated && user && user.User"
-                >Здравствуйте, <i>{{ user.User.surname }} {{ user.User.name.substring(0, 1) }}.{{user.User.secname.substring(0, 1)}}({{ user.User.role.description }})</i></label>
+                >Здравствуйте,
+                <i
+                  >{{ user.User.surname }} {{ user.User.name.substring(0, 1) }}.{{
+                    user.User.secname.substring(0, 1)
+                  }}({{ user.User.role.description }})</i
+                ></label
+              >
             </li>
             <li class="nav-item">
               <button v-if="isAuthenticated" @click="logout" class="btn btn-outline-secondary">
@@ -84,4 +101,6 @@ const goToOrgDetail = () => {
   <RouterView />
 </template>
 
-<style scoped></style>
+<style scoped>
+
+</style>
