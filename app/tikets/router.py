@@ -22,7 +22,7 @@ router = APIRouter(
     tags=["Заявки"])
 
 
-@router.get("/all_tickets", response_model=List[STicketSummury])
+@router.get("/all_tickets", response_model=List[STicketSummury], name="Получить все заявки", description="Получить список всех заявок")
 async def get_all_tickets(current_user: dict = Depends(get_current_user),
                       system: Optional[int] = None,
                       status: Optional[int] = None,
@@ -44,7 +44,7 @@ async def get_all_tickets(current_user: dict = Depends(get_current_user),
                                              ticket_id=ticket_id)
     return tickets
 
-@router.get("/{ticket_id}", response_model=SDetailTicket)
+@router.get("/{ticket_id}", response_model=SDetailTicket, name="Получить детали заявки", description="Получить детальную информацию о заявке по ID")
 async def get_detail_ticket(ticket_id: int) -> Ticket:
     ticket = await TicketDAO.get_ticket_with_messages(ticket_id)
     if not ticket:
@@ -52,7 +52,7 @@ async def get_detail_ticket(ticket_id: int) -> Ticket:
     return ticket
 
 
-@router.post("/add_ticket", response_model=SCreateTicket)
+@router.post("/add_ticket", response_model=SCreateTicket , name="Создать заявку", description="Создать новую заявку")
 async def create_ticket(ticket_data: SCreateTicket, current_user: dict = Depends(get_current_user)):
     if not current_user:
         raise UserNotAuthException
@@ -67,7 +67,7 @@ async def create_ticket(ticket_data: SCreateTicket, current_user: dict = Depends
 
     return new_ticket
 
-@router.post("/upload_file/{ticket_id}", response_model=Dict[str, str])
+@router.post("/upload_file/{ticket_id}", response_model=Dict[str, str], name="Загрузить файл", description="Загрузить файл к заявке")
 async def upload_file(ticket_id: int, file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
     if not current_user:
         raise UserNotAuthException
@@ -100,7 +100,7 @@ async def upload_file(ticket_id: int, file: UploadFile = File(...), current_user
     })
 
 
-@router.post("/{ticket_id}/add_message", response_model=SMessage)
+@router.post("/{ticket_id}/add_message", response_model=SMessage, name="Добавить сообщение", description="Добавить сообщение к заявке")
 async def add_message_to_ticket(ticket_id: int, message_data: SMessage, current_user: dict = Depends(get_current_user)):
     if not current_user:
         raise UserNotAuthException
@@ -120,7 +120,7 @@ async def add_message_to_ticket(ticket_id: int, message_data: SMessage, current_
 
     return new_message
 
-@router.put("/{ticket_id}/status", response_model=SUpdateTicketStatus)
+@router.put("/{ticket_id}/status", response_model=SUpdateTicketStatus, name="Обновить статус заявки", description="Обновить статус заявки")
 async def update_ticket_status(ticket_id: int, status_data: SUpdateTicketStatus, current_user: dict = Depends(get_current_user)):
     if not current_user:
         raise UserNotAuthException
@@ -137,8 +137,8 @@ async def update_ticket_status(ticket_id: int, status_data: SUpdateTicketStatus,
 
     return updated_ticket
 
-@router.put("/{ticket_id}/operator", response_model=SUpdateTicketOperator)
-async def update_ticket_status(ticket_id: int, user_data: SUpdateTicketOperator, current_user: dict = Depends(get_current_user)):
+@router.put("/{ticket_id}/operator", response_model=SUpdateTicketOperator, name="Обновить оператора", description="Обновить оператора, ответственного за заявку")
+async def update_ticket_operator(ticket_id: int, user_data: SUpdateTicketOperator, current_user: dict = Depends(get_current_user)):
     if not current_user:
         raise UserNotAuthException
 
@@ -155,8 +155,8 @@ async def update_ticket_status(ticket_id: int, user_data: SUpdateTicketOperator,
     return updated_ticket
 
 
-@router.put("/{ticket_id}/control_date", response_model=SUpdateTicketControlDate)
-async def update_ticket_status(ticket_id: int, user_data: SUpdateTicketControlDate, current_user: dict = Depends(get_current_user)):
+@router.put("/{ticket_id}/control_date", response_model=SUpdateTicketControlDate, name="Обновить дату контроля", description="Обновить дату контроля заявки")
+async def update_ticket_control_date(ticket_id: int, user_data: SUpdateTicketControlDate, current_user: dict = Depends(get_current_user)):
     if not current_user:
         raise UserNotAuthException
 

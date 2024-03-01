@@ -4,15 +4,14 @@ from app.news.models import News
 from app.news.schemas import SNews
 from app.news.dao import NewsDAO
 from app.users.dependescies import get_current_user
-from app.exceptions import  UserIncorrectRoleException, UserNotAuthException, NewsIsNotAddException
-
+from app.exceptions import UserIncorrectRoleException, UserNotAuthException, NewsIsNotAddException
 
 router = APIRouter(
     prefix="/news",
-    tags=["Новости"])
+    tags=["Новости"]
+)
 
-
-@router.get("/news", response_model=List[SNews])
+@router.get("/news", response_model=List[SNews], name="Получить все новости", description="Получить список всех новостей")
 async def get_all_news(current_user: dict = Depends(get_current_user)) -> List[News]:
     if not current_user:
         raise UserNotAuthException
@@ -20,8 +19,8 @@ async def get_all_news(current_user: dict = Depends(get_current_user)) -> List[N
     news = await NewsDAO.get_news_list()
     return news
 
-@router.post("/add_news", response_model=SNews)
-async def create_ticket(news_data: Annotated[SNews, Depends()], current_user: dict = Depends(get_current_user)):
+@router.post("/add_news", response_model=SNews, name="Добавить новость", description="Добавить новую новость в систему")
+async def create_news(news_data: Annotated[SNews, Depends()], current_user: dict = Depends(get_current_user)):
     if not current_user:
         raise UserNotAuthException
     
@@ -38,4 +37,4 @@ async def create_ticket(news_data: Annotated[SNews, Depends()], current_user: di
         
         return new_news
     else:
-        raise UserIncorrectRoleException    
+        raise UserIncorrectRoleException

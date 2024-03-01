@@ -13,7 +13,7 @@ router = APIRouter(
     tags=["Системы"])
 
 
-@router.get("/", response_model=List[SSystem])
+@router.get("/", response_model=List[SSystem], name="Получить список систем", description="Получить список возможных систем для заявок")
 async def get_all_systems(current_user: dict = Depends(get_current_user)) -> List[SSystem]:
     if not current_user:
         raise UserNotAuthException

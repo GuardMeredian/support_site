@@ -12,7 +12,10 @@ from app.tikets.system.router import router as systems_router
 
 
 
-app = FastAPI()
+app = FastAPI(
+    title="Техническая поддержка МИАЦ",
+    description="API для управления технической поддержкой МИАЦ",
+)
 
 origins=[
     "http://localhost:5173",

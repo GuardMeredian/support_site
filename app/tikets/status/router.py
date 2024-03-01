@@ -13,7 +13,7 @@ router = APIRouter(
     tags=["Статусы"])
 
 
-@router.get("/", response_model=List[SStatus])
+@router.get("/", response_model=List[SStatus], name="Получить список статусов", description="Получить список возможных статусов для заявок")
 async def get_all_status(current_user: dict = Depends(get_current_user)) -> List[Status]:
     if not current_user:
         raise UserNotAuthException
