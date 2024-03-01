@@ -9,8 +9,8 @@
             <td>{{ ticket.title }}</td>
           </tr>
           <tr>
-            <th scope="row">Код организации</th>
-            <td>{{ ticket.organization.lpucode }}</td>
+            <th scope="row">Организация</th>
+            <td>{{ ticket.organization.lpucode }} - {{ ticket.organization.name }}</td>
           </tr>
           <tr>
             <th scope="row">Система</th>
@@ -54,6 +54,13 @@
             <th scope="row">Дата создания</th>
             <td>{{ ticket.created_at }}</td>
           </tr>
+          <tr>
+            <th scope="row">Контрольная дата</th>
+            <td>
+              <span v-if="currentUserRoleId === 2">{{ ticket.control_date }}</span>
+              <input v-else type="date" class="form-control" :value="ticket.control_date" @input="updateControlDate" />
+            </td>
+          </tr>
         </tbody>
       </table>
       <h4>Описание:</h4>
@@ -61,7 +68,7 @@
       <h4>Сообщения:</h4>
       <ul>
         <li v-for="message in ticket.messages" :key="message.id" class="alert alert-info">
-          <strong>{{ message.creator.surname }} ({{ message.created_at.split('T')[0] }}):</strong>
+          <strong>{{ message.creator.surname }} {{ message.creator.name.substring(0, 1) }}.{{ message.creator.secname.substring(0, 1) }} ({{ message.created_at.split('T')[0] }}):</strong>
           {{ message.content }}
         </li>
       </ul>
@@ -168,6 +175,16 @@ const updateStatus = async () => {
     ticket.value.status = statuses.value.find((status) => status.id === selectedStatus.value)
   } catch (error) {
     console.error('Ошибка при обновлении статуса тикета:', error)
+  }
+}
+
+const updateControlDate = async (event) => {
+  const newControlDate = event.target.value
+  try {
+    await apiService.updateTicketControlDate(ticket.value.id, newControlDate)
+    ticket.value.control_date = newControlDate
+  } catch (error) {
+    console.error('Ошибка при обновлении контрольной даты:', error)
   }
 }
 

@@ -18,6 +18,7 @@ class SDetailTicket(BaseModel):
     creator: SUserForTicket
     assigned: Optional[SUserForTicket] = None
     created_at: date
+    control_date: Optional[date] = None
     updated_at: Optional[date] = None
     organization: SOrgForTicket
     messages: List[SMessage] = []
@@ -35,6 +36,7 @@ class STicketSummury(BaseModel):
     creator: SUserForTicket
     assigned: Optional[SUserForTicket] = None
     created_at: Optional[date] = None
+    control_date: Optional[date] = None
     updated_at: Optional[date] = None
     organization: SOrgForTicket
 
@@ -74,6 +76,12 @@ class SUpdateTicketStatus(BaseModel):
 
 class SUpdateTicketOperator(BaseModel):
     assigned_id: int
+
+    class Config:
+        from_attributes = True
+
+class SUpdateTicketControlDate(BaseModel):
+    control_date: date
 
     class Config:
         from_attributes = True

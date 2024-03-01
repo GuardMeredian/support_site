@@ -8,11 +8,13 @@ from app.exceptions import MessageIsNotAddException, TicketIsNotAddException, Ti
 from app.tikets.messages.schemas import SMessage
 from app.tikets.dao import TicketDAO
 from app.tikets.models import Ticket
-from app.tikets.schemas import STicketSummury, SDetailTicket, SCreateTicket, SUpdateTicketOperator, SUpdateTicketStatus
+from app.tikets.schemas import STicketSummury, SDetailTicket, SCreateTicket, SUpdateTicketControlDate, SUpdateTicketOperator, SUpdateTicketStatus
 from typing import Annotated, Dict, List, Optional
 from app.database import async_session_maker
 from app.users.dependescies import get_current_user
 from app.users.models import User
+
+from datetime import date
 
 
 router = APIRouter(
@@ -147,6 +149,24 @@ async def update_ticket_status(ticket_id: int, user_data: SUpdateTicketOperator,
 
     # Обновляем статус тикета в базе данных
     updated_ticket = await TicketDAO.update_ticket_operator(ticket_id, user_data.assigned_id)
+    if not updated_ticket:
+        raise TicketIsNotFoundException
+
+    return updated_ticket
+
+
+@router.put("/{ticket_id}/control_date", response_model=SUpdateTicketControlDate)
+async def update_ticket_status(ticket_id: int, user_data: SUpdateTicketControlDate, current_user: dict = Depends(get_current_user)):
+    if not current_user:
+        raise UserNotAuthException
+
+    # Проверяем, существует ли тикет с указанным ID
+    ticket = await TicketDAO.find_one_or_none(id=ticket_id)
+    if not ticket:
+        raise TicketIsNotFoundException
+
+    # Обновляем статус тикета в базе данных
+    updated_ticket = await TicketDAO.update_ticket_control_date(ticket_id, user_data.control_date)
     if not updated_ticket:
         raise TicketIsNotFoundException
 

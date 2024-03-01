@@ -82,6 +82,9 @@ export default {
   },
   uploadFile(ticketId, formData) {
     return apiClient.post(`/tickets/upload_file/${ticketId}`, formData)
+  },
+  updateTicketControlDate(ticketId, control_date) {
+    return apiClient.put(`/tickets/${ticketId}/control_date`, { control_date: control_date })
   }
   // Добавьте другие методы для взаимодействия с API по мере необходимости
 }

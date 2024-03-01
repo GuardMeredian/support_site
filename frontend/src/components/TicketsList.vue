@@ -33,6 +33,7 @@
           <th scope="col">Оператор</th>
           <th scope="col">Создал</th>
           <th scope="col">Дата создания</th>
+          <th scope="col">Контрольная дата</th>
         </tr>
       </thead>
       <tbody>
@@ -53,6 +54,7 @@
             </td>
             <td>{{ ticket.creator.surname }}</td>
             <td>{{ ticket.created_at }}</td>
+            <td>{{ ticket.control_date }}</td>
           </tr>
           <tr v-else-if="ticket.assigned" :key="`assigned-${ticket.id}`" class="table-warning">
             <th scope="row">{{ ticket.id }}</th>
@@ -67,8 +69,9 @@
             <td>{{ ticket.assigned.surname }}</td>
             <td>{{ ticket.creator.surname }}</td>
             <td>{{ ticket.created_at }}</td>
+            <td>{{ ticket.control_date }}</td>
           </tr>
-          <tr v-else :key="`unassigned-${ticket.id}`" class="table-info">
+          <tr v-else :key="`unassigned-${ticket.id}`" class="table-danger">
             <th scope="row">{{ ticket.id }}</th>
             <td>{{ ticket.organization.lpucode }}</td>
             <td>
@@ -81,6 +84,7 @@
             <td><i>Регистрируется</i></td>
             <td>{{ ticket.creator.surname }}</td>
             <td>{{ ticket.created_at }}</td>
+            <td>{{ ticket.control_date }}</td>
           </tr>
         </template>
       </tbody>

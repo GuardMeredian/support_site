@@ -1,3 +1,4 @@
+from datetime import date
 from typing import List, TypeVar
 from sqlalchemy import select, update
 from sqlalchemy.orm import joinedload, selectinload
@@ -118,6 +119,7 @@ class TicketDAO(BaseDAO[Ticket]):
                     creator=ticket.creator,
                     assigned=ticket.assigned,
                     created_at=ticket.created_at,
+                    control_date=ticket.control_date,
                     updated_at=ticket.updated_at,
                     organization=ticket.organization
                 )
@@ -162,4 +164,24 @@ class TicketDAO(BaseDAO[Ticket]):
             ticket.assigned_id = assigned_id
             # Сохраняем изменения в базе данных
             await session.commit()
+        return ticket
+    
+    @staticmethod
+    async def update_ticket_control_date(ticket_id: int, control_date: date):
+        async with async_session_maker() as session:
+            # Создаем запрос для выбора тикета с указанным ID
+            stmt = select(Ticket).where(Ticket.id == ticket_id)
+            # Выполняем запрос
+            result = await session.execute(stmt)
+            ticket = result.scalars().first()
+
+            if not ticket:
+                # Тикет не найден
+                return None
+
+            # Обновляем control_date тикета
+            ticket.control_date = control_date
+            # Сохраняем изменения в базе данных
+            await session.commit()
+
         return ticket        

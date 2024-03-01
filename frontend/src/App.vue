@@ -49,6 +49,10 @@ const goToOrgDetail = () => {
     <div>
       <nav class="navbar navbar-expand-lg">
         <div class="container collapse navbar-collapse">
+          <a class="navbar-brand" href="#">
+            <img src="/brand.png" alt="Logo" width="60" height="" />
+            <strong>МИАЦ</strong>
+          </a>
           <ul class="navbar-nav">
             <li class="nav-item" style="margin-right: 10px">
               <RouterLink v-if="isAuthenticated" class="btn btn-outline-success" to="/tickets"
@@ -101,6 +105,4 @@ const goToOrgDetail = () => {
   <RouterView />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

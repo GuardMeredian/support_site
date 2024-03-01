@@ -17,6 +17,7 @@ class Ticket(Base):
     creator_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
     assigned_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=True)
     created_at: Mapped[date] = mapped_column(default=date.today())
+    control_date: Mapped[date] = mapped_column(nullable=True)
     updated_at: Mapped[date] = mapped_column(default=date.today(), onupdate=date.today())
     organization_id: Mapped[int] = mapped_column(ForeignKey('organizations.id'), nullable=False) 
     organization = relationship("Organization", back_populates="tickets")  
