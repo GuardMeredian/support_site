@@ -5,7 +5,6 @@ const apiClient = axios.create({
   withCredentials: true // Это позволит отправлять и получать куки
 })
 
-
 export default {
   login(credentials) {
     return apiClient.post('/auth/login', credentials)
@@ -14,28 +13,28 @@ export default {
     return apiClient.post('/auth/logout')
   },
   getTickets(filters = {}) {
-    const params = new URLSearchParams();
-    Object.keys(filters).forEach(key => {
+    const params = new URLSearchParams()
+    Object.keys(filters).forEach((key) => {
       if (filters[key]) {
-        params.append(key, filters[key]);
+        params.append(key, filters[key])
       }
-    });
-    return apiClient.get(`/tickets/all_tickets?${params.toString()}`);
- },
+    })
+    return apiClient.get(`/tickets/all_tickets?${params.toString()}`)
+  },
   getTicketDetail(ticketId) {
     return apiClient.get(`/tickets/${ticketId}`)
   },
   getStatuses(roleId) {
     // Проверяем, не является ли текущий пользователь пользователем с role_id = 2
     if (roleId !== 2) {
-       return apiClient.get('/statuses/');
+      return apiClient.get('/statuses/')
     } else {
-       // Если пользователь имеет role_id = 2, возвращаем Promise, который не выполняется
-       return Promise.resolve({ data: [] });
+      // Если пользователь имеет role_id = 2, возвращаем Promise, который не выполняется
+      return Promise.resolve({ data: [] })
     }
-   },
+  },
   updateTicketStatus(ticketId, statusId) {
-    return apiClient.put(`/tickets/${ticketId}/status`, { status_id: statusId });
+    return apiClient.put(`/tickets/${ticketId}/status`, { status_id: statusId })
   },
   addMessage(ticketId, messageContent) {
     return apiClient.post(`/tickets/${ticketId}/add_message`, {
@@ -43,38 +42,38 @@ export default {
       ticket_id: messageContent.ticket_id,
       creator: messageContent.creator,
       created_at: messageContent.created_at
-    });
+    })
   },
   getUserData() {
-    return apiClient.get('/auth/user');
+    return apiClient.get('/auth/user')
   },
   getSystems() {
     return apiClient.get('/systems/')
   },
   createTicket(ticketData) {
-    return apiClient.post(`/tickets/add_ticket`, ticketData);
+    return apiClient.post(`/tickets/add_ticket`, ticketData)
   },
   getOperators(roleId) {
     // Проверяем, не является ли текущий пользователь пользователем с role_id = 2
     if (roleId !== 2) {
-       return apiClient.get('auth/users/');
+      return apiClient.get('auth/users/')
     } else {
-       // Если пользователь имеет role_id = 2, возвращаем Promise, который не выполняется
-       return Promise.resolve({ data: [] });
+      // Если пользователь имеет role_id = 2, возвращаем Promise, который не выполняется
+      return Promise.resolve({ data: [] })
     }
   },
   updateTicketOperator(ticketId, operator_id) {
-    return apiClient.put(`/tickets/${ticketId}/operator`, { assigned_id: operator_id });
+    return apiClient.put(`/tickets/${ticketId}/operator`, { assigned_id: operator_id })
   },
   getOrgs(roleId) {
     // Проверяем, не является ли текущий пользователь пользователем с role_id = 2
     if (roleId !== 2) {
-       return apiClient.get('/med_org/med_orgs/');
+      return apiClient.get('/med_org/med_orgs/')
     } else {
-       // Если пользователь имеет role_id = 2, возвращаем Promise, который не выполняется
-       return Promise.resolve({ data: [] });
+      // Если пользователь имеет role_id = 2, возвращаем Promise, который не выполняется
+      return Promise.resolve({ data: [] })
     }
-   },
+  },
   getNews() {
     return apiClient.get('/news/news')
   },
@@ -82,7 +81,7 @@ export default {
     return apiClient.get(`/med_org/${orgid}`)
   },
   uploadFile(ticketId, formData) {
-    return apiClient.post(`/tickets/upload_file/${ticketId}`, formData);
-   },
+    return apiClient.post(`/tickets/upload_file/${ticketId}`, formData)
+  }
   // Добавьте другие методы для взаимодействия с API по мере необходимости
 }
