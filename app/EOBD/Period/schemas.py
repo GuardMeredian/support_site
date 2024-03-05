@@ -5,17 +5,17 @@ from datetime import date
 
 
 class SPeriod(BaseModel):
-    LPUCODE: str
-    DATE_BEG: date
-    DATE_END: date
-    STATUS: str
-    NAME: str
-    YEAR: int
-    MODE: str
-    NUMBER_PER: int
-    TYPE_LPU: str
-    VDATE1: date
-    VDATE2: date
+    LPUCODE: Optional[int]
+    DATE_BEG: Optional[date]
+    DATE_END: Optional[date]
+    STATUS: Optional[int]
+    NAME: Optional[str]
+    YEAR: Optional[int]
+    MODE: Optional[int]
+    NUMBER_PER: Optional[int]
+    TYPE_LPU: Optional[int]
+    VDATE1: Optional[date]
+    VDATE2: Optional[date]
 
     class Config:
         from_attributes = True

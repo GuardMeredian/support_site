@@ -11,11 +11,12 @@ class Settings(BaseSettings):
     DB_PASS: str
     DB_NAME: str
 
-    MS_SQL_HOST: str
-    MS_SQL_PORT: int
-    MS_SQL_USER: str
-    MS_SQL_PASS: str
-    MS_SQL_NAME: str
+    EOBD_HOST: str
+    EOBD_PORT: int
+    EOBD_USER: str
+    EOBD_PASS: str
+    EOBD_NAME: str
+    AKTPAK_NAME: str
 
     @property
     def DATABASE_URL(self):
@@ -23,7 +24,11 @@ class Settings(BaseSettings):
     
     @property
     def MS_SQL_CONNECTION_STRING(self):
-        return f"mssql+aioodbc://{self.MS_SQL_USER}:{self.MS_SQL_PASS}@{self.MS_SQL_HOST}:{self.MS_SQL_PORT}/{self.MS_SQL_NAME}?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
+        return f"mssql+aioodbc://{self.EOBD_USER}:{self.EOBD_PASS}@{self. EOBD_HOST}:{self.EOBD_PORT}/{self.EOBD_NAME}?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
+    
+    @property
+    def AKTPAK_MS_SQL_CONNECTION_STRING(self):
+        return f"mssql+aioodbc://{self.EOBD_USER}:{self.EOBD_PASS}@{self. EOBD_HOST}:{self.EOBD_PORT}/{self. AKTPAK_NAME}?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
 
     SECRET_KEY: str
     ALGORITM: str

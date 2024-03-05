@@ -6,6 +6,7 @@ import TicketDetail from '@/components/TicketDetail.vue'
 import OrganizationsList from '@/components/OrganizationsList.vue'
 import NewsList from '@/components/NewsList.vue'
 import OrgDetail from '@/components/OrgDetail.vue'
+import PeriodsList from '@/components/PeriodsList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,7 +47,13 @@ const router = createRouter({
       component: OrgDetail,
       props: true,
       meta: { requiresAuth: true } // Добавляем мета-тег для маршрутов, требующих аутентификации
-    }
+    },
+    {
+      path: '/periods',
+      name: 'periods',
+      component: PeriodsList,
+      meta: { requiresAuth: true } // Добавляем мета-тег для маршрутов, требующих аутентификации
+    },
     // Добавьте другие маршруты по мере необходимости
   ]
 })

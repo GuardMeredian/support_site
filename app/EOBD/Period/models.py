@@ -19,18 +19,15 @@ class Period(EobdBase):
     MODE: Mapped[str]
     NUMBER_PER: Mapped[int]
     TYPE_LPU: Mapped[str]
-    COUNTER_AP: Mapped[int]
+    COUNTER_APR: Mapped[int]
     DATE_APR: Mapped[datetime]
     VDATE1: Mapped[date]
     VDATE2: Mapped[date]
-    COUNTER_A2: Mapped[int]
-    DATE_APR_M: Mapped[datetime]
+    COUNTER_APR_MIAC: Mapped[int]
+    DATE_APR_MIAC: Mapped[datetime]
     COMMENTS: Mapped[str]
     IS_KMIS: Mapped[bool]
 
     # Отношения с другими моделями, если они есть
     # tickets = relationship("Ticket", back_populates="period")
     # users = relationship("User", back_populates="period")
-
-    def __str__(self):
-        return f"{self.NAME} ({self.COUNTER})"

@@ -85,6 +85,9 @@ export default {
   },
   updateTicketControlDate(ticketId, control_date) {
     return apiClient.put(`/tickets/${ticketId}/control_date`, { control_date: control_date })
+  },
+  getPeriods() {
+    return apiClient.get('/periods')
   }
   // Добавьте другие методы для взаимодействия с API по мере необходимости
 }

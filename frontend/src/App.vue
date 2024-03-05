@@ -79,6 +79,11 @@ const goToOrgDetail = () => {
                 >Новости</RouterLink
               >
             </li>
+            <li class="nav-item" style="margin-right: 10px">
+              <RouterLink v-if="isAuthenticated" class="btn btn-outline-success" to="/periods"
+                >Отчеты</RouterLink
+              >
+            </li>
           </ul>
           <ul class="navbar-nav ms-auto">
             <!-- Добавьте ms-auto к ul, чтобы выровнять элементы по правому краю в Bootstrap 5 -->
