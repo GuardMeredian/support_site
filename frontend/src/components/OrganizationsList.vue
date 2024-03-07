@@ -10,14 +10,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="organization in sortedOrganizations" :key="organization.id">
-          <td>{{ organization.lpucode }}</td>
+        <tr v-for="organization in sortedOrganizations" :key="organization.COUNTER">
+          <td>{{ organization.LPUCODE }}</td>
           <td>
             <RouterLink
               class="no-highlight"
-              :to="{ name: 'OrgDetail', params: { orgid: organization.id } }"
+              :to="{ name: 'OrgDetail', params: { orgid: organization.COUNTER } }"
             >
-              {{ organization.name }}
+              {{ organization.NAME }}
             </RouterLink>
           </td>
           <!-- Добавьте здесь ячейки для других данных организации -->
@@ -45,7 +45,7 @@ onMounted(async () => {
 
 // Сортировка организаций по возрастанию поля Lpucode
 const sortedOrganizations = computed(() => {
-  return [...organizations.value].sort((a, b) => a.lpucode - b.lpucode)
+  return [...organizations.value].sort((a, b) => a.LPUCODE - b.LPUCODE)
 })
 </script>
 

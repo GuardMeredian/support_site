@@ -15,6 +15,12 @@ eobd_async_session = sessionmaker(eobd_engine, expire_on_commit=False, class_=As
 AKTPAK_engine = create_async_engine(settings.AKTPAK_MS_SQL_CONNECTION_STRING)
 AKTPAK_async_session = sessionmaker(AKTPAK_engine, expire_on_commit=False, class_=AsyncSession)
 
+TEMP_engine = create_async_engine(settings.TEMP_MS_SQL_CONNECTION_STRING)
+TEMP_async_session = sessionmaker(TEMP_engine, expire_on_commit=False, class_=AsyncSession)
+
+TEST_engine = create_async_engine(settings.TEST_MS_SQL_CONNECTION_STRING)
+TEST_async_session = sessionmaker(TEST_engine, expire_on_commit=False, class_=AsyncSession)
+
 
 
 Base = declarative_base()

@@ -10,6 +10,7 @@ from app.news.router import router as news_router
 from app.tikets.status.router import router as status_router
 from app.tikets.system.router import router as systems_router
 from app.EOBD.Period.router import router as period_router
+from app.EOBD.router import router as EOBD_router
 
 
 
@@ -30,6 +31,7 @@ app.add_middleware(
 )
 admin = Admin(app, engine)
 
+app.include_router(EOBD_router)
 app.include_router(period_router)
 app.include_router(auth_router)
 app.include_router(news_router)

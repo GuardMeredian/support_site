@@ -88,6 +88,9 @@ export default {
   },
   getPeriods() {
     return apiClient.get('/periods')
-  }
+  },
+  getProtocol39AmbResult(chief, Year, Year_qr) {
+    return apiClient.get(`/protocol/protocol39_amb/${chief}/${Year}/${Year_qr}`);
+   },
   // Добавьте другие методы для взаимодействия с API по мере необходимости
 }

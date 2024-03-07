@@ -14,9 +14,19 @@ class LPUDAO(BaseDAO[AKPC_LPU]):
     async def get_orgs(cls) -> list[AKPC_LPU]:
         async with AKTPAK_async_session() as session:
             query = select(cls.model).where(
-                (cls.model.D_FIN.isnot(None)) & 
-                (cls.model.NAME_S.isnot(None))
+                (cls.model.D_FIN.is_(None)) & 
+                (cls.model.NAME_S.isnot(None)) &
+                (cls.model.TYPE_S == 2)
             ).order_by(cls.model.LPUCODE)
             result = await session.execute(query)
             lpus = result.scalars().all()
         return lpus
+    
+
+    @classmethod
+    async def get_org_card(cls, organzation_id: int):
+        async with AKTPAK_async_session() as session:
+            query = select(cls.model).where(cls.model.COUNTER == organzation_id)
+            result = await session.execute(query)
+            org = result.scalars().first()
+        return org

@@ -25,8 +25,8 @@ class OrganizationDAO(BaseDAO[Organization]):
             # Используем joinedload для оптимизации запроса
             query = select(cls.model).options(joinedload(cls.model.users)).where(cls.model.id == organization_id)
             result = await session.execute(query)
-            ticket = result.mappings().first()
-            ticket_detail = ticket['Organization']
-            return ticket_detail
+            org = result.mappings().first()
+            org_detail = org['Organization']
+            return org_detail
         
     
