@@ -6,8 +6,6 @@ import TicketDetail from '@/components/TicketDetail.vue'
 import OrganizationsList from '@/components/OrganizationsList.vue'
 import NewsList from '@/components/NewsList.vue'
 import OrgDetail from '@/components/OrgDetail.vue'
-import PeriodsList from '@/components/PeriodsList.vue'
-import AmbProtocolDetail from '@/components/AmbProtocolDetail.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,23 +41,10 @@ const router = createRouter({
       meta: { requiresAuth: true } // Добавляем мета-тег для маршрутов, требующих аутентификации
     },
     {
-      path: '/med_org/:orgid',
+      path: '/med_org/:lpucode',
       name: 'OrgDetail',
       component: OrgDetail,
       props: true,
-      meta: { requiresAuth: true } // Добавляем мета-тег для маршрутов, требующих аутентификации
-    },
-    {
-      path: '/periods',
-      name: 'periods',
-      component: PeriodsList,
-      meta: { requiresAuth: true } // Добавляем мета-тег для маршрутов, требующих аутентификации
-    },
-    {
-      path: '/protocol/protocol39_amb/:chief/:Year/:Year_qr',
-      name: 'ambProtocolDetail',
-      component: AmbProtocolDetail,
-      props:true,
       meta: { requiresAuth: true } // Добавляем мета-тег для маршрутов, требующих аутентификации
     },
     // Добавьте другие маршруты по мере необходимости

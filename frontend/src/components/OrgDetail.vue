@@ -3,42 +3,34 @@
      <h2>Детальная информация об организации</h2>
      <hr />
      <div v-if="organization">
-       <h3>{{ organization.NAME }}</h3>
-       <h3>Код организации: {{ organization.LPUCODE }}</h3>
-       <h4>Контактная информация:</h4>
-       <ul>
-         <li>Телефон: {{ organization.PHONE }}</li>
-         <li>Факс: {{ organization.FAX }}</li>
-         <li>E-mail: {{ organization.E_MAIL3 }}</li>
-         <li>Сайт: <a :href="organization.WWW" target="_blank">{{ organization.WWW }}</a></li>
-       </ul>
-       <h4>Список руководителей:</h4>
-       <table class="table">
-         <thead>
-           <tr>
-             <th>ФИО</th>
-             <th>Должность</th>
-             <th>Телефон</th>
-           </tr>
-         </thead>
-         <tbody>
-           <tr>
-             <td>{{ organization.FACE }}</td>
-             <td>Главный врач</td>
-             <td>{{ organization.PHONE }}</td>
-           </tr>
-           <tr>
-             <td>{{ organization.FACE1 }}</td>
-             <td>Заместитель главного врача</td>
-             <td>{{ organization.PHONE1 }}</td>
-           </tr>
-           <tr>
-             <td>{{ organization.FACE3 }}</td>
-             <td>Начальник отдела АСУ</td>
-             <td>{{ organization.PHONE3 }}</td>
-           </tr>
-         </tbody>
-       </table>
+       <h3>{{ organization.name }}</h3>
+       <h3>Код организации: {{ organization.lpucode }}</h3>
+       <div v-if="organization.users && organization.users.length > 0">
+         <h4>Список пользователей:</h4>
+         <table class="table table-bordered">
+           <thead>
+             <tr>
+               <th class="text-center">Фамилия</th>
+               <th class="text-center">Имя</th>
+               <th class="text-center">Отчество</th>
+               <th class="text-center">Должность</th>
+               <th class="text-center">Телефон</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr v-for="user in organization.users" :key="user.name">
+               <td>{{ user.surname }}</td>
+               <td>{{ user.name }}</td>
+               <td>{{ user.secname }}</td>
+               <td>{{ user.post }}</td>
+               <td>{{ user.contact_tel }}</td>
+             </tr>
+           </tbody>
+         </table>
+       </div>
+       <div v-else>
+         <p>Нет данных о пользователях.</p>
+       </div>
      </div>
      <div v-else>
        <p>Загрузка данных об организации...</p>
@@ -52,14 +44,15 @@ import { useRoute } from 'vue-router'
 import apiService from '@/apiService' // Путь к вашему сервису API
 
 const route = useRoute()
-const organizationId = ref(null)
+const lpucode = ref(null)
 const organization = ref(null)
 
 onMounted(async () => {
-  organizationId.value = parseInt(route.params.orgid)
+  lpucode.value = parseInt(route.params.lpucode)
   try {
-    const response = await apiService.getOrgDetail(organizationId.value) // Предполагается, что у вас есть метод getOrganizationDetail в вашем сервисе API
+    const response = await apiService.getOrgDetail(lpucode.value) // Предполагается, что у вас есть метод getOrganizationDetail в вашем сервисе API
     organization.value = response.data
+    console.log(organization.value)
   } catch (error) {
     console.error('Ошибка при загрузке деталей организации:', error)
   }

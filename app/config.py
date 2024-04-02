@@ -24,22 +24,6 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URL(self):
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
-    
-    @property
-    def MS_SQL_CONNECTION_STRING(self):
-        return f"mssql+aioodbc://{self.EOBD_USER}:{self.EOBD_PASS}@{self. EOBD_HOST}:{self.EOBD_PORT}/{self.EOBD_NAME}?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
-    
-    @property
-    def AKTPAK_MS_SQL_CONNECTION_STRING(self):
-        return f"mssql+aioodbc://{self.EOBD_USER}:{self.EOBD_PASS}@{self. EOBD_HOST}:{self.EOBD_PORT}/{self. AKTPAK_NAME}?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
-    
-    @property
-    def TEMP_MS_SQL_CONNECTION_STRING(self):
-        return f"mssql+aioodbc://{self.EOBD_USER}:{self.EOBD_PASS}@{self. EOBD_HOST}:{self.EOBD_PORT}/{self.EOBD_TEMP_NAME}?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
-    
-    @property
-    def TEST_MS_SQL_CONNECTION_STRING(self):
-        return f"mssql+aioodbc://{self.EOBD_USER}:{self.EOBD_PASS}@{self. EOBD_HOST}:{self.EOBD_PORT}/{self.EOBD_TEST_NAME}?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
 
     SECRET_KEY: str
     ALGORITM: str

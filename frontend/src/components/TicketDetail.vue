@@ -58,7 +58,13 @@
             <th scope="row">Контрольная дата</th>
             <td>
               <span v-if="currentUserRoleId === 2">{{ ticket.control_date }}</span>
-              <input v-else type="date" class="form-control" :value="ticket.control_date" @input="updateControlDate" />
+              <input
+                v-else
+                type="date"
+                class="form-control"
+                :value="ticket.control_date"
+                @input="updateControlDate"
+              />
             </td>
           </tr>
         </tbody>
@@ -68,7 +74,12 @@
       <h4>Сообщения:</h4>
       <ul>
         <li v-for="message in ticket.messages" :key="message.id" class="alert alert-info">
-          <strong>{{ message.creator.surname }} {{ message.creator.name.substring(0, 1) }}.{{ message.creator.secname.substring(0, 1) }} ({{ message.created_at.split('T')[0] }}):</strong>
+          <strong
+            >{{ message.creator.surname }} {{ message.creator.name.substring(0, 1) }}.{{
+              message.creator.secname.substring(0, 1)
+            }}
+            ({{ message.created_at.split('T')[0] }}):</strong
+          >
           {{ message.content }}
         </li>
       </ul>
@@ -102,9 +113,11 @@
             class="form-control"
             rows="3"
             placeholder="Введите ваше сообщение"
+            @input="autoResize"
+            style="resize: none;"
           ></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Написать</button>
+        <button type="submit" class="btn btn-primary mt-4 mb-5">Написать</button>
       </form>
     </div>
     <div v-else>
@@ -128,6 +141,11 @@ const operators = ref([])
 const selectedOperator = ref('')
 
 const currentUserRoleId = ref(null)
+
+const autoResize = (event) => {
+ event.target.style.height = 'auto'; // Сначала сбросить высоту
+ event.target.style.height = `${event.target.scrollHeight}px`; // Затем установить высоту, равную scrollHeight
+};
 
 // Определение функции refreshTicketData
 const refreshTicketData = async () => {

@@ -20,13 +20,13 @@ class OrganizationDAO(BaseDAO[Organization]):
             return tickets
         
     @classmethod
-    async def get_org_card(cls, organization_id: int) -> Organization:
+    async def get_org_card(cls, organization_lpucode: int) -> Organization:
         async with async_session_maker() as session:
             # Используем joinedload для оптимизации запроса
-            query = select(cls.model).options(joinedload(cls.model.users)).where(cls.model.id == organization_id)
+            query = select(cls.model).options(joinedload(cls.model.users)).where(cls.model.lpucode == organization_lpucode)
             result = await session.execute(query)
-            org = result.mappings().first()
-            org_detail = org['Organization']
-            return org_detail
+            # Используем first() для получения первого результата или None, если результатов нет
+            org = result.scalars().first()
+            return org
         
     

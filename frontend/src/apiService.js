@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: 'http://127.0.0.1:8000',
   withCredentials: true // Это позволит отправлять и получать куки
 })
 
@@ -77,20 +77,14 @@ export default {
   getNews() {
     return apiClient.get('/news/news')
   },
-  getOrgDetail(orgid) {
-    return apiClient.get(`/med_org/${orgid}`)
+  getOrgDetail(lpucode) {
+    return apiClient.get(`/med_org/${lpucode}`)
   },
   uploadFile(ticketId, formData) {
     return apiClient.post(`/tickets/upload_file/${ticketId}`, formData)
   },
   updateTicketControlDate(ticketId, control_date) {
     return apiClient.put(`/tickets/${ticketId}/control_date`, { control_date: control_date })
-  },
-  getPeriods() {
-    return apiClient.get('/periods')
-  },
-  getProtocol39AmbResult(chief, Year, Year_qr) {
-    return apiClient.get(`/protocol/protocol39_amb/${chief}/${Year}/${Year_qr}`);
-   },
+  }
   // Добавьте другие методы для взаимодействия с API по мере необходимости
 }

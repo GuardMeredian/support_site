@@ -36,8 +36,8 @@ onMounted(async () => {
 })
 
 const goToOrgDetail = () => {
-  if (user.value.User && user.value.User.organization && user.value.User.organization.id) {
-    router.push({ name: 'OrgDetail', params: { orgid: user.value.User.organization.id } })
+  if (user.value.User && user.value.User.organization && user.value.User.organization.lpucode) {
+    router.push({ name: 'OrgDetail', params: { lpucode: user.value.User.organization.lpucode } })
   } else {
     console.error('Не удалось получить идентификатор организации пользователя')
   }
@@ -80,7 +80,7 @@ const goToOrgDetail = () => {
               >
             </li>
             <li class="nav-item" style="margin-right: 10px">
-              <RouterLink v-if="isAuthenticated" class="btn btn-outline-success" to="/periods"
+              <RouterLink v-if="isAuthenticated" class="btn btn-outline-success disabled" to="/periods"
                 >Отчеты</RouterLink
               >
             </li>
